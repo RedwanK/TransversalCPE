@@ -1,2 +1,5 @@
+**/*.iml
+Java/.idea
+Java/out
 .idea/
 .idea/*
