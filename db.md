@@ -4,12 +4,14 @@ incident:
 - coordy
 - ville
 - intensité
+- type
 
 véhicule:
 - id
 - type
 - carburant
-- caserne_id
+- établissement_id
+- disponibilité
 
 établissement:
 - id
