@@ -1,4 +1,4 @@
-package com.transverse;
+package com.simulation;
 
 public class FireSimulator {
 }
