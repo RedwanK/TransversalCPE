@@ -6,6 +6,11 @@ incident:
 - intensity
 - updated_at
 
+city:
+- id
+- name
+- country
+
 vehicle:
 - id
 - type
