@@ -1,37 +1,45 @@
 incident:
 - id
-- coordx
-- coordy
-- ville
-- intensité
-- type
+- latitude
+- longitude
+- city_id
+- intensity
+- updated_at
 
-véhicule:
+vehicle:
 - id
 - type
-- carburant
-- établissement_id
-- disponibilité
+- fuel
+- site_id
 
-établissement:
+site:
 - id
-- ville
-- code_postal
-(- coordx)
-(- coordy)
-- rue
-- n°tel
+- city_id
+- postal_code
+- latitude
+- longitude
+- street
+- phone_number
 
 agent:
 - id
-- nom
-- prenom
-- adresse
-- fonction
-- établissement_id
+- firstname
+- lastname
+- address
+- job
+- site_id
 
-fonction:
+job:
 - id
-- nom
-(- hiérarchie)
+- name
+- hierarchy
 - agent_id
+
+audit:
+- id
+[...incident data...]
+    - updated_at
+    - city_name
+    - lat
+    - long
+    - intensity
