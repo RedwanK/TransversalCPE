@@ -57,21 +57,16 @@ void delete_incidents(
 /* @brief
  * Create a string from an incident object.
  */
-char *to_string_incident(
-    incident *icd
+void to_string_incident(
+    incident *icd,
+    char *str
 );
 
 /* @brief
  * Create a string from an incidents object.
  */
-char *to_string_incidents(
-    incidents *icds
-);
-
-/* @brief
- * Delete a string incident.
- */
-void delete_string_incident(
+void to_string_incidents(
+    incidents *icds,
     char *str
 );
 

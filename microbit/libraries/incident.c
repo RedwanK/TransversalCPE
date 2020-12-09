@@ -113,17 +113,13 @@ void delete_incidents(
  * 
  * @params
  * icd : Object to transform to string : incident *
- * 
- * @return
- * A new string allocate in memory
+ * str : String which contain the result : char * of size STR_SIZE
  */
-char *to_string_incident(
-    incident *icd
+void to_string_incident(
+    incident *icd,
+    char *str
 ) {
-    char *str = malloc(STR_SIZE * sizeof(char));
     sprintf(str, "x:%.2f;y:%.2f;v:%.2f#", icd->latitude, icd->longitude, icd->intensity);
-
-    return str;
 
 } /* to_string_incident */
 
@@ -132,16 +128,12 @@ char *to_string_incident(
  * 
  * @params
  * icds : Object to transform to string : incidents *
- * 
- * @return
- * A new string allocate in memory
+ * str : String which contain the result : char * of size STR_SIZE * DATA_SIZE
  */
-char *to_string_incidents(
-    incidents *icds
+void to_string_incidents(
+    incidents *icds,
+    char *str
 ) {
-    char    *str = malloc(STR_SIZE * DATA_SIZE * sizeof(char)),
-            *str_temp = NULL;
-
     int i = 0,
         first = 0;
 
@@ -151,6 +143,7 @@ char *to_string_incidents(
         icd = icds->icd[i];
 
         if (icd) {
+            
             if (first == 0){
                 /* First case */
                 sprintf(str, "x:%.2f;y:%.2f;v:%.2f#", icd->latitude, icd->longitude, icd->intensity);
@@ -158,9 +151,9 @@ char *to_string_incidents(
 
             } else {
                 /* Concate string */
-                str_temp = to_string_incident(icd);
+                char str_temp[STR_SIZE];
+                to_string_incident(icd, str_temp);
                 strcat(str, str_temp);
-                delete_string_incident(str_temp);
 
             }
 
@@ -168,20 +161,4 @@ char *to_string_incidents(
 
     } /* Foreach incident */
 
-    return str;
-
 } /* to_string_incident */
-
-/* @brief
- * Delete a string incident.
- * 
- * @params
- * str: String to delet : char *
- */
-void delete_string_incident(
-    char *str
-) {
-    /* Desallocate memory */
-    free(str);
-
-} /* delete_string_incident */

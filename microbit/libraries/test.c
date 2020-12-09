@@ -31,7 +31,8 @@ int main(
     printf("Latitude : %.2f\n", icd->latitude);
     printf("Intensity : %.2f\n", icd->intensity);
 
-    char *str = to_string_incident(icd);
+    char str[STR_SIZE];
+    to_string_incident(icd, str);
     printf("%s\n", str);
     
     /* Test values */
@@ -43,9 +44,7 @@ int main(
     
     /* Delete the object */
     printf("Delete the object\n");
-    delete_string_incident(str);
     delete_incident(icd);
-    str = NULL;
     icd = NULL;
 
     /**** Test incident ****/
@@ -86,14 +85,13 @@ int main(
     }
 
     /* Create string */
-    str = to_string_incidents(icds);
-    printf("%s\n", str);
+    char str_60[STR_SIZE * DATA_SIZE];
+    to_string_incidents(icds, str_60);
+    printf("%s\n", str_60);
     
     /* Delete the object */
     printf("Delete the object\n");
-    delete_string_incident(str);
     delete_incidents(icds);
-    str = NULL;
     icds = NULL;
 
     printf("******** Test passed ********\n");
