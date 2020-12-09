@@ -4,7 +4,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Gedmo\Timestampable\Traits\Timestampable;
-use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity
  * @ORM\Table(name="incident")
@@ -21,22 +20,19 @@ class Incident {
     private $id;
 
     /**
-     * @ORM\Column(type="integer", nullable=false)
-     * @Assert\NotBlank()
+     * @ORM\Column(type="float", nullable=false)
      *
      */
     private $latitude;
 
     /**
-     * @ORM\Column(type="integer", nullable=false)
-     * @Assert\NotBlank()
+     * @ORM\Column(type="float", nullable=false)
      *
      */
     private $longitude;
 
     /**
-     * @ORM\Column(type="integer", nullable=false)
-     * @Assert\NotBlank()
+     * @ORM\Column(type="float", nullable=false)
      *
      */
     private $intensity;
