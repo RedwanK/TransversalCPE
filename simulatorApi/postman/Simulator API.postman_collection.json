@@ -1,0 +1,97 @@
+{
+	"info": {
+		"_postman_id": "989e0709-3e17-45af-bd98-b53433276c6e",
+		"name": "Simulator API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "List incidents",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{ENV}}/incidents/list",
+					"host": [
+						"{{ENV}}"
+					],
+					"path": [
+						"incidents",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "City list",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{ENV}}/cities/list",
+					"host": [
+						"{{ENV}}"
+					],
+					"path": [
+						"cities",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create City",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Paris\",\n    \"country\": \"FRA\"\n}"
+				},
+				"url": {
+					"raw": "{{ENV}}/cities/create",
+					"host": [
+						"{{ENV}}"
+					],
+					"path": [
+						"cities",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create incident",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"latitude\" : 45.759846,\n    \"longitude\": 4.881366,\n    \"intensity\": 5.0,\n    \"city\": 1\n}"
+				},
+				"url": {
+					"raw": "{{ENV}}/incidents/create",
+					"host": [
+						"{{ENV}}"
+					],
+					"path": [
+						"incidents",
+						"create"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
