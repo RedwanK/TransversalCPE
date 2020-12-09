@@ -4,6 +4,9 @@
 /* Size of an array of incidents */
 #define DATA_SIZE 60
 
+/* Size of an array of incidents */
+#define STR_SIZE 30
+
 /* Object for create a incident */
 typedef struct {
     float longitude;
@@ -49,6 +52,27 @@ void delete_incident(
  */
 void delete_incidents(
     incidents *icds
+);
+
+/* @brief
+ * Create a string from an incident object.
+ */
+char *to_string_incident(
+    incident *icd
+);
+
+/* @brief
+ * Create a string from an incidents object.
+ */
+char *to_string_incidents(
+    incidents *icds
+);
+
+/* @brief
+ * Delete a string incident.
+ */
+void delete_string_incident(
+    char *str
 );
 
 #endif
