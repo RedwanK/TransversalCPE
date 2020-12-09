@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "incident.h"
 
@@ -53,6 +54,13 @@ incident *new_incident() {
 incidents *new_incidents() {
     incidents *icds = calloc(1, sizeof(incidents));
 
+    int i = 0;
+
+    for(i; i < DATA_SIZE; i++) {
+        icds->icd[i] = NULL;
+        
+    } /* Foreach incident */
+
     return icds;
 
 } /* new_incidents */
@@ -61,7 +69,7 @@ incidents *new_incidents() {
  * Delete an incident object.
  *
  * @params
- * icd : Object to delete.
+ * icd : Object to delete : incident *
  */
 void delete_incident(
     incident *icd
@@ -80,7 +88,7 @@ void delete_incident(
  * And delete all incident object inside.
  *
  * @params
- * icds : Objet to delete.
+ * icds : Objet to delete : incidents *
  */
 void delete_incidents(
     incidents *icds
@@ -88,11 +96,69 @@ void delete_incidents(
     int i = 0;
 
     for(i; i < DATA_SIZE; i++) {
-        delete_incident(icds->icd[i]);
-        icds->icd[i] = NULL;
+        if (icds->icd[i]) {
+            delete_incident(icds->icd[i]);
+            icds->icd[i] = NULL;
+        }
+
     } /* Foreach incident */
 
     /* Desallocate memory */
     free(icds);
 
 } /* delete_incidents */
+
+/* @brief
+ * Create a string from an incident object.
+ * 
+ * @params
+ * icd : Object to transform to string : incident *
+ * str : String which contain the result : char * of size STR_SIZE
+ */
+void to_string_incident(
+    incident *icd,
+    char *str
+) {
+    sprintf(str, "x:%.2f;y:%.2f;v:%.2f#", icd->latitude, icd->longitude, icd->intensity);
+
+} /* to_string_incident */
+
+/* @brief
+ * Create a string from an incidents object.
+ * 
+ * @params
+ * icds : Object to transform to string : incidents *
+ * str : String which contain the result : char * of size STR_SIZE * DATA_SIZE
+ */
+void to_string_incidents(
+    incidents *icds,
+    char *str
+) {
+    int i = 0,
+        first = 0;
+
+    incident *icd = NULL;
+
+    for(i; i < DATA_SIZE; i++) {
+        icd = icds->icd[i];
+
+        if (icd) {
+            
+            if (first == 0){
+                /* First case */
+                sprintf(str, "x:%.2f;y:%.2f;v:%.2f#", icd->latitude, icd->longitude, icd->intensity);
+                first = 1;
+
+            } else {
+                /* Concate string */
+                char str_temp[STR_SIZE];
+                to_string_incident(icd, str_temp);
+                strcat(str, str_temp);
+
+            }
+
+        }
+
+    } /* Foreach incident */
+
+} /* to_string_incident */

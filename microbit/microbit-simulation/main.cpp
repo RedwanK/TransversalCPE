@@ -15,13 +15,13 @@ int main()
     serial.baud(115200);
     
     //TEst
-    float   latitude = 10.2f,
+    float   latitude = 20.2f,
             longitude = 15.5f,
             intensity = 9.9f;
     
     incident *icd = create_object_incident(longitude, latitude, intensity);
-    char str[20];
-    sprintf(str, "%.2f", icd->longitude);
+    char str[STR_SIZE];
+    to_string_incident(icd, str);
     uBit.display.scroll(str);
     delete_incident(icd);
     icd = NULL;
