@@ -1,10 +1,11 @@
 package entities;
 
 public class Site {
+
     private int id;
     private int cityId;
     private int postalCode;
-    private String street
+    private String street;
     private float latitude;
     private float longitude;
     private String phoneNumber;

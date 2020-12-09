@@ -50,8 +50,4 @@ public class Job {
     public void setAgentId(int agentId) {
         this.agentId = agentId;
     }
-
-    public Job() {
-
-    }
 }

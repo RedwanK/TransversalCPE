@@ -1,11 +1,13 @@
 package entities;
 
+import java.util.Date;
+
 public class Incident {
     private int id;
     private float latitude;
     private float longitude;
     private int cityId;
-    private int intensity;
+    private float intensity;
     private Date updatedAt;
 
     public Incident() {}
@@ -55,11 +57,11 @@ public class Incident {
         this.cityId = cityId;
     }
 
-    public int getIntensity() {
+    public float getIntensity() {
         return intensity;
     }
 
-    public void setIntensity(int intensity) {
+    public void setIntensity(float intensity) {
         this.intensity = intensity;
     }
 
