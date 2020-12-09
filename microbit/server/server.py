@@ -61,9 +61,7 @@ def read_scales():
         column = i-(i//10)*10
         row = i//10
         if (scales[i].get()>0) :
-                send += "(%d,%d,%d)" %(row, column, scales[i].get())
-                send += "#"
-        #print("Fire x=%d, y=%d has value %d" %( row, column, scales[i].get()) )
+                send += "x:%d;y:%d;v:%d#" %(row, column, scales[i].get())
     
     b['state'] = 'normal'
 
