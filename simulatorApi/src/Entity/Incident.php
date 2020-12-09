@@ -114,4 +114,24 @@ class Incident {
 
         return $this;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getCity()
+    {
+        return $this->city;
+    }
+
+    /**
+     * @param mixed $city
+     *
+     * @return Incident
+     */
+    public function setCity($city)
+    {
+        $this->city = $city;
+
+        return $this;
+    }
 }
