@@ -11,3 +11,5 @@
 
 .idea/
 .idea/*
+composer.lock
+symfony.lock
