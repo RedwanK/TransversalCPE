@@ -2,7 +2,7 @@
 #define __INCIDENT_H__
 
 /* Size of an array of incidents */
-#define DATA_SIZE 60
+#define DATA_SIZE 10 // Cant save 60 -> micro:bit memory error
 
 /* Size of an array of incidents */
 #define STR_SIZE 30

@@ -15,7 +15,7 @@ for i in range(Nscales):
 # send serial message 
 # Don't forget to establish the right serial port ******** ATTENTION
 # SERIALPORT = "/dev/ttyUSB0"
-SERIALPORT = "COM10"
+SERIALPORT = "COM9"
 BAUDRATE = 115200
 ser = serial.Serial()
 

@@ -10,6 +10,14 @@ MicroBit uBit;
 /* Initialise the serial usb port */
 MicroBitSerial serial(USBTX, USBRX);
 
+/* @brief
+ * Read values from serial.
+ * When there are values, add the values to the string
+ * until there isn't a #. Then, create a incident object and add 
+ * it to the incidents object.
+ */
+void readSerial();
+
 int main()
 {
     /* Initialise the micro:bit runtime */
@@ -17,21 +25,32 @@ int main()
     /* Initialise the serial bauderate */
     serial.baud(115200);
     
-    /* Test struct */
-    float   latitude = 20.2f,
-            longitude = 15.5f,
-            intensity = 9.9f;
+    readSerial();
+    //uBit.sleep(100);
     
-    incident *icd = create_object_incident(longitude, latitude, intensity);
-    char str[STR_SIZE];
-    to_string_incident(icd, str);
-    uBit.display.scroll(str);
-    delete_incident(icd);
-    icd = NULL;
+    release_fiber();
     
+} /* main */
+
+/* @brief
+ * Read values from serial.
+ * When there are values, add the values to the string
+ * until there isn't a #. Then, create a incident object and add 
+ * it to the incidents object.
+ *
+ * first : Indicate if we are in the first case, 0 yes, 1 no
+ * i : Indicate where we are in the string
+ * str : String who contain the values from serial for one incident
+ * icds : Incidents where we put the new incident
+ */
+void readSerial() {
     int first = 0,
         i = 0;
+    
     char str[STR_SIZE];
+
+    incidents *icds = new_incidents();
+
     while(1){
         /* Read serial */
         int v = serial.read(ASYNC);
@@ -45,23 +64,53 @@ int main()
                 first = 1;    
             }
             if (c != '#') {
-                str[i] = c;
+                if (i < STR_SIZE) {
+                    /* Check we dont exceed the string */
+                    str[i] = c;
+                    
+                } else {
+                    str[STR_SIZE - 1] = '\0';
+                }
+
                 i++;
+
             } else {
+                if (i < STR_SIZE) {
+                    /* Check we dont exceed the string */
+                    str[i] = '\0';
+
+                } else {
+                    str[STR_SIZE - 1] = '\0';
+
+                }
+
                 first = 0;
                 i = 0;
                 /* Create incident object from string */
+                add_incident_from_string(icds, str);
+
+                /* Empty str */
+                str[0] = '\0';
 
             }
             
         } else {
-            //send data if exist  
-           // ManagedString cms((c);
-             //       uBit.display.scroll(cms);  
-        }
-        //uBit.sleep(100);
-    }
-    
-    release_fiber();
-}
+            if (icds->icd[0]) {
+                /* Create string */
+                char str_60[STR_SIZE * DATA_SIZE];
+                to_string_incidents(icds, str_60);
+                uBit.display.scroll(str_60);
 
+                /* Send incidents in radio */
+
+                /* Delete incidents */
+                delete_incidents(icds);
+                /* Create a new one */
+                icds = new_incidents();
+
+            } /* If at least one incident is not null */
+
+        }
+    }
+
+} /* readSerial */
