@@ -17,11 +17,43 @@ int main(
     float   latitude = 10.2f,
             longitude = 15.5f,
             intensity = 9.9f;
+
+    /**** Test incident from string ****/
+    printf("******** Test incident from string ********\n");
+
+    /* Create object */
+    char str_incident[STR_SIZE] = "x:10.2;y:15.5;v:9.9";
+    incident *icd = create_object_incident_from_string(str_incident);
+
+    printf("Longitude : %.2f\n", icd->longitude);
+    printf("Latitude : %.2f\n", icd->latitude);
+    printf("Intensity : %.2f\n", icd->intensity);
+
+    /* Test values */
+    assert(icd->longitude == longitude);
+    assert(icd->latitude == latitude);
+    assert(icd->intensity == intensity);
+
+    /* Delete the object */
+    printf("Delete the object\n");
+    delete_incident(icd);
+    icd = NULL;
+
+    /**** Test incident from string error ****/
+    printf("******** Test incident from string error ********\n");
+
+    /* Create object */
+    strcpy(str_incident, ":10.2;y:15.5;v:9.9");
+    icd = create_object_incident_from_string(str_incident);
+
+    /* Test object */
+    assert(icd == NULL);
+
     /**** Test incident ****/
     printf("******** Test incident ********\n");
 
     /* Create object */
-    incident *icd = new_incident();
+    icd = new_incident();
     /* Set the values of the incident */
     icd->longitude = longitude;
     icd->latitude = latitude;
@@ -88,6 +120,21 @@ int main(
     char str_60[STR_SIZE * DATA_SIZE];
     to_string_incidents(icds, str_60);
     printf("%s\n", str_60);
+
+    /* Test to add from a string */
+    icd = icds->icd[DATA_SIZE - 5];
+    delete_incident(icd);
+    icd = NULL;
+
+    icds->icd[DATA_SIZE - 5] = NULL;
+
+    strcpy(str_incident, "x:10.2;y:15.5;v:9.9");
+
+    int result = add_incident_from_string(icds, str_incident);
+
+    assert(result == 1);
+    assert(icds->icd[DATA_SIZE - 5] != NULL);
+    assert(icds->icd[DATA_SIZE - 5]->longitude == 15.5f);
     
     /* Delete the object */
     printf("Delete the object\n");

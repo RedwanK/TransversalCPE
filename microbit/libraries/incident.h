@@ -29,6 +29,19 @@ incident *create_object_incident(
 );
 
 /* @brief
+ * Create an incident object from a string.
+ * Exemple of string : x:15.30;y:10.21;v:9.89
+ * x : latitude
+ * y : longitude
+ * v : intensity
+ * ; : delimiter between x, y and v
+ * : : delimiter between the name (x, y or v) and the value
+ */
+incident *create_object_incident_from_string(
+    char *str
+);
+
+/* @brief
  * Create an incident object.
  */
 incident *new_incident();
@@ -38,6 +51,16 @@ incident *new_incident();
  * By default DATA_SIZE incident.
  */
 incidents *new_incidents();
+
+/* @brief
+ * Create an incident object from a string.
+ * If no error, add it to the incidents object.
+ * See more at the function create_object_incident_from_string.
+ */
+int add_incident_from_string(
+    incidents *icds,
+    char *str
+);
 
 /* @brief
  * Delete an incident object.
