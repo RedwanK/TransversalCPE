@@ -32,6 +32,76 @@ incident *create_object_incident(
 } /* create_object_incident */
 
 /* @brief
+ * Create an incident object from a string.
+ * Exemple of string : x:15.30;y:10.21;v:9.89
+ * x : latitude
+ * y : longitude
+ * v : intensity
+ * ; : delimiter between x, y and v
+ * : : delimiter between the name (x, y or v) and the value
+ * 
+ * @params
+ * str : String to convert into object : char *
+ * 
+ * @return
+ * A new incident allocate in memory or NULL in error case.
+ */
+incident *create_object_incident_from_string(
+    char *str
+) {
+    char delim[] = ";:";
+    char *token = strtok(str, delim);
+
+    int x = 0, 
+        y = 0, 
+        v = 0;
+
+    incident *icd = new_incident();
+    
+    while( token != NULL ) {
+        if (strcmp("x", token) == 0)
+            x = 1;
+        else if (strcmp("y", token) == 0)
+            y = 1;
+        else if (strcmp("v", token) == 0)
+            v = 1;
+        else {
+            if (x == 1) {
+                float latitude = atof(token);;
+
+                icd->latitude = latitude;
+                x = 0;
+
+            } else if (y == 1) {
+                float longitude = atof(token);;
+
+                icd->longitude = longitude;
+                y = 0;
+
+            } else if (v == 1) {
+                float intensity = atof(token);;
+
+                icd->intensity = intensity;
+                v = 0;
+
+            } else {
+                /* Delete the object */
+                delete_incident(icd);
+                return NULL;
+
+            } /* Error case */
+
+        } /* Value case */
+
+        token = strtok(NULL, delim);
+        
+    } /* For each token */
+
+    return icd;
+
+} /* create_object_incident_from_string */
+
+/* @brief
  * Create an incident object.
  *
  * @return
@@ -64,6 +134,47 @@ incidents *new_incidents() {
     return icds;
 
 } /* new_incidents */
+
+/* @brief
+ * Create an incident object from a string.
+ * If no error, add it to the incidents object.
+ * See more at the function create_object_incident_from_string.
+ * 
+ * @params
+ * icds : Incidents object : incidents *
+ * str : String to convert into object : char *
+ * 
+ * @return
+ * 1 in case of success or 0 in error case.
+ */
+int add_incident_from_string(
+    incidents *icds,
+    char *str
+) {
+    /* Check no icds */
+    if (!icds)
+        return 0;
+
+    /* Create object */
+    incident *icd = create_object_incident_from_string(str);
+
+    if (icd) {
+        int i = 0;
+        
+        for(i; i < DATA_SIZE; i++) {
+            if (!icds->icd[i]) {
+                icds->icd[i] = icd;
+                return 1;
+
+            } /* Add it in NULL place */
+
+        } /* For each incident */
+
+    } /* No error */
+
+    return 0;
+
+} /* add_incident_from_string */
 
 /* @brief
  * Delete an incident object.
