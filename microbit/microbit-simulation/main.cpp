@@ -24,9 +24,11 @@ int main()
     uBit.init();
     /* Initialise the serial bauderate */
     serial.baud(115200);
-    
-    readSerial();
-    //uBit.sleep(100);
+    /* Initialise the heap allocator */
+    microbit_create_heap(MICROBIT_SD_GATT_TABLE_START + MICROBIT_SD_GATT_TABLE_SIZE, MICROBIT_SD_LIMIT);
+
+    /* Create fiber for serial and schedule it */
+    create_fiber(readSerial);
     
     release_fiber();
     
