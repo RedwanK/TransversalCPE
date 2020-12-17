@@ -96,3 +96,33 @@ To check the connection to your influxb server you can do the following :
 {"results":[{"statement_id":0,"series":[{"name":"databases","columns":["name"],"values":[["_internal"],["iot"]]}]}]}
 ```
 
+# Mosquitto installation
+
+1. Pull the latest eclipse-mosquitto image
+```bash
+ $ docker pull eclipse-mosquitto
+```
+
+2. Run the mosquitto-server
+```bash
+ $ docker run -it --name mosquitto -p 1883:1883 eclipse-mosquitto
+```
+
+# Tests procedure
+
+In order to test the infrastructures we've just set up, you have to run the 'MQTTBridgeInfluxDB.py' python script.
+
+```bash
+$ python3 MQTTBridgeInfluxDB.py
+
+MQTT to InfluxDB bridge
+Connected with result code 0
+```
+It automatically connect to the MQTT broker we launched with docker (on port 1883 by default) and wait for messages.
+
+To send a message and see if everything works you must run 'tests/publishMQTT.py'
+
+```bash
+$ python3 publishMQTT.py 
+data published 
+```
