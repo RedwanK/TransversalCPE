@@ -15,7 +15,7 @@ for i in range(Nscales):
 # send serial message 
 # Don't forget to establish the right serial port ******** ATTENTION
 # SERIALPORT = "/dev/ttyUSB0"
-SERIALPORT = "COM9"
+SERIALPORT = "COM10"
 BAUDRATE = 115200
 ser = serial.Serial()
 
@@ -38,6 +38,7 @@ def initUART():
                 print ("Starting Up Serial Monitor")
                 try:
                         ser.open()
+                        launched = True
                 except serial.SerialException:
                         print("Serial {} port not available".format(SERIALPORT))
                         exit()
@@ -47,6 +48,7 @@ def initUART():
                 ser.close()
                 serialButton['text'] = "Open Serial"
                 b['state'] = 'disabled'
+        
 
 
 def sendUARTMessage(msg):
@@ -74,5 +76,32 @@ b.grid(row=6,column=7,columnspan = 3)
 serialButton.grid(row=6, column=0, columnspan = 3)
 
 # initUART()
+launched = False
 
-mainloop()
+
+
+if __name__ == '__main__':
+        #mainloop()
+        ser.port=SERIALPORT
+        ser.baudrate=BAUDRATE
+        ser.bytesize = serial.EIGHTBITS #number of bits per bytes
+        ser.parity = serial.PARITY_NONE #set parity check: no parity
+        ser.stopbits = serial.STOPBITS_ONE #number of stop bits
+        ser.timeout = None          #block read
+
+        # ser.timeout = 0             #non-block read
+        # ser.timeout = 2              #timeout block read
+        ser.xonxoff = False     #disable software flow control
+        ser.rtscts = False     #disable hardware (RTS/CTS) flow control
+        ser.dsrdtr = False       #disable hardware (DSR/DTR) flow control
+        #ser.writeTimeout = 0     #timeout for write
+        try:
+                ser.open()
+                while True :
+                        data_b = ser.readline() # recuperation des données en provenance de l'UART (microbit)
+                        data_str = str(data_b, 'UTF-8') #conversion des bits en string
+                        print(data_str)
+        except serial.SerialException:
+                print("Serial {} port not available".format(SERIALPORT))
+                exit()
+        

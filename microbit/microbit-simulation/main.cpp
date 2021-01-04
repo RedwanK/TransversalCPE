@@ -211,8 +211,11 @@ uBit.display.scroll(pb);
                 
                 /* Check the address is trusted */
                 int found = check_address(address);
+
+                /* Check the address is not connected */
+                int found_c = check_connected(address);
                 
-                if (found == 1) {
+                if (found == 1 && found_c == 0) {
                     if (send_initialise == 0) {
                         /* Send init */
                         send_init();
@@ -262,10 +265,15 @@ uBit.display.scroll(pb);
                     
                 } /* Loop until end of packet or before separator */
                 
+                address[j] = '\0';
+                
                 /* Check the address is trusted */
                 int found = check_address(address);
+
+                /* Check the address is not connected */
+                int found_c = check_connected(address);
                 
-                if (found == 1) {
+                if (found == 1 && found_c == 0) {
                     if (connected == 0) {
                         /* Not connected */
                         
@@ -287,6 +295,8 @@ uBit.display.scroll(pb);
                                 j++;
                                 
                             } /* Loop until end of packet */
+                            
+                            tmp_key[j] = '\0';
 
                             if (send_acquittement == 0) {
                                 if (error == 0) {
@@ -542,7 +552,6 @@ void send_ack(int cipher) {
 
     if (cipher == 1) {
         /* Add separator */
-        i++;
         pb[i] = m_protocol_separator;
 
         /* Generate random key */
@@ -568,7 +577,22 @@ void send_ack(int cipher) {
 
     send_acquittement = 1;
 
-} /* send_init */
+    int check = 0,
+        timeout = 0;
+    
+    while (check != 1 && timeout < 3) {
+        check = check_response();
+
+        if (check == 0) {
+            uBit.radio.datagram.send(pb);
+
+        } /* If no response send again */
+
+        timeout++;
+
+    } /* While no response and timeout 3 times */
+
+} /* send_ack */
 
 void generate_random_key() {
     char c;
