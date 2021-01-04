@@ -69,19 +69,16 @@ if __name__ == '__main__':
                                 data_b = ser.readline() # recuperation des données en provenance de l'UART (microbit)
                                 data_str = str(data_b, 'UTF-8') #conversion des bits en string
                                 if data_str == "retry\n": #si une erreur est survenue = le microbit renvoie "retry\n"
-                                    sendUARTMessage(str.encode(LAST_VALUE_RECEIVED)) # alors on renvoie le dernier message envoyé pour relancer l'operation
-                                    print("retry <" + LAST_VALUE_RECEIVED + ">") # retour visuel
+                                        sendUARTMessage(str.encode(LAST_VALUE_RECEIVED)) # alors on renvoie le dernier message envoyé pour relancer l'operation
+                                        print("retry <" + LAST_VALUE_RECEIVED + ">") # retour visuel
                                 else:
                                         LAST_VALUE = data_b # sinon, tout s'est bien passé et on a reçu des données depuis le microbit
                                         client1= paho.Client("microbitEmergency")
                                         client1.on_publish = on_publish
                                         client1.connect(broker,port)
                                         ret= client1.publish("iot/incident/fire","2.89")        
-                                    #collection.insert_one(json.loads(data_str)) # on les sauvegarde en bdd
-                                    print(data_str)
+                                        #collection.insert_one(json.loads(data_str)) # on les sauvegarde en bdd
+                                        print(data_str)
         except (KeyboardInterrupt, SystemExit): # en cas de ctrl+c on close tout et on quitte
-                server.shutdown()
-                server.server_close()
-                f.close()
                 ser.close()
                 exit()
