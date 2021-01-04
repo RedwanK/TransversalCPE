@@ -126,3 +126,21 @@ To send a message and see if everything works you must run 'tests/publishMQTT.py
 $ python3 publishMQTT.py 
 data published 
 ```
+
+# Grafana installation
+
+1. Pull the container
+
+```bash
+ $ sudo docker pull grafana/grafana
+```
+
+2. Run the grafana container
+
+```bash
+ $ docker run -d -p 3000:3000 grafana/grafana
+```
+
+3. Open your browser and go to `127.0.0.1:3000`
+
+4. Finally configure grafana with the GUI

@@ -7,4 +7,4 @@ def on_publish(client,userdata,result):
 client1= paho.Client("control1")
 client1.on_publish = on_publish
 client1.connect(broker,port)
-ret= client1.publish("iot/incident/fire","4.8")         
+ret= client1.publish("iot/incident/fire","2.89")         
