@@ -34,6 +34,9 @@ MicroBit uBit;
 /* Initialise the serial usb port */
 MicroBitSerial serial(USBTX, USBRX);
 
+MicroBitMessageBus bus;
+MicroBitDisplay display;
+
 /* @brief
  * Read values from serial.
  * When there are values, add the values to the string
@@ -161,220 +164,224 @@ void readSerial() {
             } /* If at least one incident is not null */
 
         }
+
+        fiber_sleep(1);
+
     }
 
 } /* readSerial */
 
 void receive_protocol() {
-    int number_packets = uBit.radio.dataReady();
-    if (number_packets > 0) {
-        /* Receive packet */
-        PacketBuffer pb = uBit.radio.datagram.recv();
-uBit.display.scroll(pb);
-        /* Check if the paquet is protocol */
-        if ((char)pb[0] == '#') {
-            /* Protocol case */
-            if ((char)pb[1] == 'I') {
-                /* INIT case */
-                int i = 0,
-                    j = 0,
-                    error = 0;
-                    
-                while(init[i] != '\0') {
-                    if (pb[i + 1] != init[i]) {
-                        error = 1;    
-                    }
-                    i++;
-                    
-                } /* Check no errors */
+    /* Receive packet */
+    PacketBuffer pb = uBit.radio.datagram.recv();
+        
+    uBit.display.scroll(pb);
+    /* Check if the paquet is protocol */
+    if ((char)pb[0] == '#') {
+        /* Protocol case */
+        if ((char)pb[1] == 'I') {
+            /* INIT case */
+            int i = 0,
+                j = 0,
+                error = 0;
                 
-                if (error == 1)
-                    return;
-                    
-                /* Check there is separator */
+            while(init[i] != '\0') {
+                if (pb[i + 1] != init[i]) {
+                    error = 1;    
+                }
                 i++;
-                if (pb[i] != m_protocol_separator)
-                    return;
-                    
-                /* Get address */
+                
+            } /* Check no errors */
+            
+            if (error == 1)
+                return;
+                
+            /* Check there is separator */
+            i++;
+            if (pb[i] != m_protocol_separator)
+                return;
+                
+            /* Get address */
+            i++;
+            char address[SN_SIZE];
+            while(pb[i] != '\0') {
+                if (j >= SN_SIZE)
+                    break;
+
+                address[j] = pb[i];
                 i++;
-                char address[SN_SIZE];
-                while(pb[i] != '\0') {
-                    if (j >= SN_SIZE)
-                        break;
-
-                    address[j] = pb[i];
-                    i++;
-                    j++;
-                    
-                } /* Loop until end of packet */
+                j++;
                 
-                address[j] = '\0';
-                
-                /* Check the address is trusted */
-                int found = check_address(address);
+            } /* Loop until end of packet */
+            
+            address[j] = '\0';
+            
+            /* Check the address is trusted */
+            int found = check_address(address);
 
-                /* Check the address is not connected */
-                int found_c = check_connected(address);
-                
-                if (found == 1 && found_c == 0) {
-                    if (send_initialise == 0) {
-                        /* Send init */
-                        send_init();
+            /* Check the address is not connected */
+            int found_c = check_connected(address);
+            
+            if (found == 1 && found_c == 0) {
+                if (send_initialise == 0) {
+                    /* Send init */
+                    send_init();
 
-                    } else {
-                        /* Send ack */
-                        send_ack(1);
+                } else {
+                    /* Send ack */
+                    send_ack(1);
 
-                    }
-                    
-                } /* Address is trusted */
-            } else if (pb[1] == 'A') {
-                /* ACK case */
-                int i = 0,
-                    j = 0,
-                    error = 0;
-                    
-                while(ack[i] != '\0') {
-                    if (pb[i + 1] != ack[i]) {
-                        error = 1;    
-                    }
-                    i++;
-                    
-                } /* Check no errors */
+                }
                 
-                if (error == 1)
-                    return;
-                    
-                /* Check there is separator */
+            } /* Address is trusted */
+        } else if (pb[1] == 'A') {
+            /* ACK case */
+            int i = 0,
+                j = 0,
+                error = 0;
+                
+            while(ack[i] != '\0') {
+                if (pb[i + 1] != ack[i]) {
+                    error = 1;    
+                }
                 i++;
-                if (pb[i] != m_protocol_separator)
-                    return;
-                    
-                /* Get address */
+                
+            } /* Check no errors */
+            
+            if (error == 1)
+                return;
+                
+            /* Check there is separator */
+            i++;
+            if (pb[i] != m_protocol_separator)
+                return;
+                
+            /* Get address */
+            i++;
+            char address[SN_SIZE];
+            while(pb[i] != ':') {
+                if (pb[i] == '\0' || j >= SN_SIZE) {
+                    error = 1;
+                    break;
+
+                } /* Check if this is the end of packet */
+
+                address[j] = pb[i];
                 i++;
-                char address[SN_SIZE];
-                while(pb[i] != ':') {
-                    if (pb[i] == '\0' || j >= SN_SIZE) {
-                        error = 1;
-                        break;
+                j++;
+                
+            } /* Loop until end of packet or before separator */
+            
+            address[j] = '\0';
+            
+            /* Check the address is trusted */
+            int found = check_address(address);
 
-                    } /* Check if this is the end of packet */
-
-                    address[j] = pb[i];
-                    i++;
-                    j++;
+            /* Check the address is not connected */
+            int found_c = check_connected(address);
+            
+            if (found == 1 && found_c == 0) {
+                if (connected == 0) {
+                    /* Not connected */
                     
-                } /* Loop until end of packet or before separator */
-                
-                address[j] = '\0';
-                
-                /* Check the address is trusted */
-                int found = check_address(address);
+                    if (error == 0) {
+                        /* No error */
+                        /* Get the key */
+                        i++;
+                        j = 0;
+                        char tmp_key[KEY_SIZE];
+                        while(pb[i] != '\0') {
+                            if ( j >= KEY_SIZE) {
+                                error = 1;
+                                break;
 
-                /* Check the address is not connected */
-                int found_c = check_connected(address);
-                
-                if (found == 1 && found_c == 0) {
-                    if (connected == 0) {
-                        /* Not connected */
-                        
-                        if (error == 0) {
-                            /* No error */
-                            /* Get the key */
+                            } /* Check if this is the end of packet */
+
+                            tmp_key[j] = pb[i];
                             i++;
-                            j = 0;
-                            char tmp_key[KEY_SIZE];
-                            while(pb[i] != '\0') {
-                                if ( j >= KEY_SIZE) {
-                                    error = 1;
-                                    break;
-
-                                } /* Check if this is the end of packet */
-
-                                tmp_key[j] = pb[i];
-                                i++;
-                                j++;
-                                
-                            } /* Loop until end of packet */
+                            j++;
                             
-                            tmp_key[j] = '\0';
+                        } /* Loop until end of packet */
+                        
+                        tmp_key[j] = '\0';
 
-                            if (send_acquittement == 0) {
-                                if (error == 0) {
-                                    set_key(tmp_key);
-                                    send_ack(0);
-                                    /* Connected */
-                                    connect(address);
-
-                                } /* Set the key */
-
-                            } else {
-                                if (error == 0) {
-                                    /* The other micorbit already in communication so get his key */
-                                    set_key(tmp_key);
-                                    /* Connected */
-                                    connect(address);
-
-                                } /* If there is a key set it */
-
-                            }
-
-                        } else {
-                            if (send_acquittement == 1) {
-                                /* Normal there is no key */
+                        if (send_acquittement == 0) {
+                            if (error == 0) {
+                                set_key(tmp_key);
+                                send_ack(0);
                                 /* Connected */
                                 connect(address);
-                            }
+
+                            } /* Set the key */
+
+                        } else {
+                            if (error == 0) {
+                                /* The other micorbit already in communication so get his key */
+                                set_key(tmp_key);
+                                /* Connected */
+                                connect(address);
+
+                            } /* If there is a key set it */
+
                         }
 
                     } else {
-                        /* Already connected so send the current key */
-                        /* Send ack */
-                        send_ack(1);
-
-                        /* Connected */
-                        connect(address);
-
+                        if (send_acquittement == 1) {
+                            /* Normal there is no key */
+                            /* Connected */
+                            connect(address);
+                        }
                     }
-                    
-                } /* Address is trusted */
-            } else if (pb[1] == 'S') {
-                /* STOP case */
-                int i = 0,
-                    j = 0,
-                    error = 0;
-                    
-                while(stop[i] != '\0') {
-                    if (pb[i + 1] != stop[i]) {
-                        error = 1;    
-                    }
-                    i++;
-                    
-                } /* Check no errors */
+
+                } else {
+                    /* Already connected so send the current key */
+                    /* Send ack */
+                    send_ack(1);
+
+                    /* Connected */
+                    connect(address);
+
+                }
                 
-                if (error == 1)
-                    return;
-
-                if (connected == 1) {
-                    send_initialise = 0;
-                    send_acquittement = 0;
-                    connected = 0;
-                    send_stop();
-                    uBit.display.print("D");
-
-                } /* Stop the connection */
-
-            }
+            } /* Address is trusted */
+        } else if (pb[1] == 'S') {
+            /* STOP case */
+            int i = 0,
+                j = 0,
+                error = 0;
+                
+            while(stop[i] != '\0') {
+                if (pb[i + 1] != stop[i]) {
+                    error = 1;    
+                }
+                i++;
+                
+            } /* Check no errors */
             
-        } else {
-            /* Communication case */
-            
+            if (error == 1)
+                return;
+
+            if (connected == 1) {
+                send_initialise = 0;
+                send_acquittement = 0;
+                connected = 0;
+                connected_number = 0;
+                send_stop();
+                display.print("D");
+
+            } /* Stop the connection */
+
         }
+        
+    } else {
+        /* Communication case */
+        
+    }
 
-        //free(uBit.radio.getRxBuf());
+    if (connected == 1)
+        display.print("C");
 
-    } /* Check there are packets */
+    fiber_sleep(1);
     
 } /* receive_protocol */
 
@@ -426,7 +433,7 @@ int check_response() {
         if (number_packets > 0)
             return 1;
         
-        uBit.sleep(600);
+        fiber_sleep(600);
                 
     } /* Wait and check we receive a paquet */
     
@@ -435,9 +442,9 @@ int check_response() {
     
 } /* check_response */
 
-void connect(char *address) {
+void connect(char *address) {    
     if (connected_number < NUMBER_SN) {
-        uBit.display.print("C");
+        display.print("C");
         connected = 1;
         send_initialise = 0;
         send_acquittement = 0;
@@ -464,6 +471,8 @@ void send_protocol() {
         
     }
 
+    fiber_sleep(1);
+
 } /* send_protocol */
 
 void network_protocol() {
@@ -471,7 +480,6 @@ void network_protocol() {
     {
         send_protocol();
         receive_protocol();
-
     }
 
 } /* network_protocol */
@@ -484,19 +492,23 @@ void initialise() {
     /* Initialise the heap allocator */
     microbit_create_heap(MICROBIT_SD_GATT_TABLE_START + MICROBIT_SD_GATT_TABLE_SIZE, MICROBIT_SD_LIMIT);
     /* Initialise the radio */
+    scheduler_init(bus);
+    //bus.listen(MICROBIT_ID_RADIO, MICROBIT_RADIO_EVT_DATAGRAM, receive_protocol);
     uBit.radio.enable();
     
     /* Default disconnected */
     connected = 0;
     send_initialise = 0;
     send_acquittement = 0;
-    uBit.display.print("D");
+    display.print("D");
     
 } /* initialise */
 
 void send_init() {
     /* Initialise the connexion */
-    uBit.display.print("I");
+    display.print("I");
+
+    fiber_sleep(500);
 
     PacketBuffer pb(M_PROTOCOL_SIZE + SN_SIZE);
     
@@ -529,29 +541,13 @@ void send_init() {
 
     send_initialise = 1;
     
-    int check = 0,
-        timeout = 0;
-    
-    while (check != 1 && timeout < 3) {
-        check = check_response();
-
-        if (check == 0) {
-            uBit.radio.datagram.send(pb);
-
-        } /* If no response send again */
-
-        timeout++;
-
-    } /* While no response and timeout 3 times */
-
-    //if (check == 0)
-        //send_initialise = 0;
-    
 } /* send_init */
 
 void send_stop() {
     /* Stop the connexion */
-    uBit.display.print("S");
+    display.print("S");
+
+    fiber_sleep(500);
 
     PacketBuffer pb(M_PROTOCOL_SIZE + SN_SIZE);
     
@@ -568,27 +564,14 @@ void send_stop() {
     /* Add end line */
     i++;
     pb[i] = '\0';
-
-    int check = 0,
-        timeout = 0;
-    
-    while (check != 1 && timeout < 3) {
-        check = check_response();
-
-        if (check == 0) {
-            uBit.radio.datagram.send(pb);
-
-        } /* If no response send again */
-
-        timeout++;
-
-    } /* While no response and timeout 3 times */
     
 } /* send_stop */
 
 void send_ack(int cipher) {
     /* Ack the connexion */
-    uBit.display.print("A");
+    display.print("A");
+
+    fiber_sleep(500);
 
     PacketBuffer pb(M_PROTOCOL_SIZE + SN_SIZE + KEY_SIZE);
     
@@ -640,21 +623,6 @@ void send_ack(int cipher) {
     uBit.radio.datagram.send(pb);
 
     send_acquittement = 1;
-
-    int check = 0,
-        timeout = 0;
-    
-    while (check != 1 && timeout < 3) {
-        check = check_response();
-
-        if (check == 0) {
-            uBit.radio.datagram.send(pb);
-
-        } /* If no response send again */
-
-        timeout++;
-
-    } /* While no response and timeout 3 times */
 
 } /* send_ack */
 
