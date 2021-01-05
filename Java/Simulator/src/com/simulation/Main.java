@@ -111,16 +111,16 @@ public class Main {
             e.printStackTrace();
         }
         int i = 0;
-        while(i<jArray.size()) {
-
-            JSONObject o = (JSONObject)jArray.get(i);
-            int id = (int) o.get("id");
-            float latitude = (float) o.get("latitude");
-            float longitude = (float) o.get("longitude");
-            float intensity = (float) o.get("intensity");
-
-            //Incident incident = new Incident(, )
-        }
-
+//        while(i<jArray.size()) {
+//
+//            JSONObject o = (JSONObject)jArray.get(i);
+//            int id = (int) o.get("id");
+//            float latitude = (float) o.get("latitude");
+//            float longitude = (float) o.get("longitude");
+//            float intensity = (float) o.get("intensity");
+//
+//            //Incident incident = new Incident(, )
+//        }
+        return incidents;
     }
 }
