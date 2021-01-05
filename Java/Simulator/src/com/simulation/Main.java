@@ -114,7 +114,7 @@ public class Main {
         while(i<jArray.size()) {
 
             JSONObject o = (JSONObject)jArray.get(i);
-            int id = (int)o.get("id");
+            int id = (int) o.get("id");
             float latitude = (float) o.get("latitude");
             float longitude = (float) o.get("longitude");
             float intensity = (float) o.get("intensity");
