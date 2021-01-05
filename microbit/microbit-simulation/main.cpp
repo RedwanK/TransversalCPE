@@ -60,6 +60,8 @@ void initialise();
 
 void send_init();
 
+void send_stop();
+
 void send_ack(int cipher);
 
 void generate_random_key();
@@ -337,13 +339,41 @@ uBit.display.scroll(pb);
                     }
                     
                 } /* Address is trusted */
+            } else if (pb[1] == 'S') {
+                /* STOP case */
+                int i = 0,
+                    j = 0,
+                    error = 0;
+                    
+                while(stop[i] != '\0') {
+                    if (pb[i + 1] != stop[i]) {
+                        error = 1;    
+                    }
+                    i++;
+                    
+                } /* Check no errors */
+                
+                if (error == 1)
+                    return;
+
+                if (connected == 1) {
+                    send_initialise = 0;
+                    send_acquittement = 0;
+                    connected = 0;
+                    send_stop();
+                    uBit.display.print("D");
+
+                } /* Stop the connection */
+
             }
             
         } else {
             /* Communication case */
             
         }
-        
+
+        //free(uBit.radio.getRxBuf());
+
     } /* Check there are packets */
     
 } /* receive_protocol */
@@ -430,10 +460,7 @@ void send_protocol() {
         
     } else if (uBit.buttonB.isPressed() && connected == 1) {
         /* Stop the connexion */
-        uBit.display.print("D");
-        send_initialise = 0;
-        send_acquittement = 0;
-        uBit.radio.datagram.send("STOP");
+        send_stop();
         
     }
 
@@ -522,6 +549,43 @@ void send_init() {
     
 } /* send_init */
 
+void send_stop() {
+    /* Stop the connexion */
+    uBit.display.print("S");
+
+    PacketBuffer pb(M_PROTOCOL_SIZE + SN_SIZE);
+    
+    pb[0] = '#';
+    
+    int i = 0,
+        j = 0;
+    while(init[i] != '\0') {
+        pb[i + 1] = stop[i];
+        i++;
+        
+    } /* Copy stop in the packet buffer */
+    
+    /* Add end line */
+    i++;
+    pb[i] = '\0';
+
+    int check = 0,
+        timeout = 0;
+    
+    while (check != 1 && timeout < 3) {
+        check = check_response();
+
+        if (check == 0) {
+            uBit.radio.datagram.send(pb);
+
+        } /* If no response send again */
+
+        timeout++;
+
+    } /* While no response and timeout 3 times */
+    
+} /* send_stop */
+
 void send_ack(int cipher) {
     /* Ack the connexion */
     uBit.display.print("A");
@@ -536,7 +600,7 @@ void send_ack(int cipher) {
         pb[i + 1] = ack[i];
         i++;
         
-    } /* Copy init in the packet buffer */
+    } /* Copy ack in the packet buffer */
     
     /* Add separator */
     i++;
