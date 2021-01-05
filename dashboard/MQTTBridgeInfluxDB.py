@@ -22,6 +22,8 @@ class SensorData(NamedTuple):
     location: str
     measurement: str
     value: float
+    lat: float
+    lng: float
 
 def on_connect(client, userdata, flags, rc):
     """ The callback for when the client receives a CONNACK response from the server."""
@@ -30,14 +32,27 @@ def on_connect(client, userdata, flags, rc):
 
 def _parse_mqtt_message(topic, payload):
     match = re.match(MQTT_REGEX, topic)
-    if match:
+    parsedValues = parseData(payload)
+    if match and parsedValues != None:
         location = match.group(1)
         measurement = match.group(2)
         if measurement == 'status':
             return None
-        return SensorData(location, measurement, float(payload))
-    else:
+        return SensorData(location, measurement, float(parsedValues['v']), float(parsedValues['x']), float(parsedValues['y']))
+    return None
+
+def parseData(data):
+    data = data.rstrip()
+    if data[len(data)-1] != "#":
+        print("Caractère de fin de chaine manquant.")
         return None
+    else:
+        data = data.replace("#", "")
+        parsedValues = {}
+        for item in data.split(";"):
+            current = item.split(':')
+            parsedValues[current[0]] = current[1]
+        return parsedValues
 
 def _send_sensor_data_to_influxdb(sensor_data):
     json_body = [
@@ -47,7 +62,9 @@ def _send_sensor_data_to_influxdb(sensor_data):
                 'location': sensor_data.location
             },
             'fields': {
-                'value': sensor_data.value
+                'value': sensor_data.value,
+                'lat': sensor_data.lat,
+                'lng': sensor_data.lng
             }
         }
     ]
