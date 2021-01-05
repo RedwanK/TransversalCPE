@@ -9,7 +9,6 @@ import socketserver
 import serial
 import threading
 import time
-from pymongo import MongoClient
 import json
 import paho.mqtt.client as paho
 
@@ -76,7 +75,7 @@ if __name__ == '__main__':
                                         client1= paho.Client("microbitEmergency")
                                         client1.on_publish = on_publish
                                         client1.connect(broker,port)
-                                        ret= client1.publish("iot/incident/fire","2.89")        
+                                        ret= client1.publish("iot/incident/fire", data_str)        
                                         #collection.insert_one(json.loads(data_str)) # on les sauvegarde en bdd
                                         print(data_str)
         except (KeyboardInterrupt, SystemExit): # en cas de ctrl+c on close tout et on quitte
