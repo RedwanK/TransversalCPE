@@ -175,9 +175,9 @@ void receive_protocol() {
     /* Receive packet */
     PacketBuffer pb = uBit.radio.datagram.recv();
         
-    uBit.display.scroll(pb);
     /* Check if the paquet is protocol */
     if ((char)pb[0] == '#') {
+        //display.scroll(pb);
         /* Protocol case */
         if ((char)pb[1] == 'I') {
             /* INIT case */
@@ -347,7 +347,6 @@ void receive_protocol() {
         } else if (pb[1] == 'S') {
             /* STOP case */
             int i = 0,
-                j = 0,
                 error = 0;
                 
             while(stop[i] != '\0') {
@@ -553,9 +552,8 @@ void send_stop() {
     
     pb[0] = '#';
     
-    int i = 0,
-        j = 0;
-    while(init[i] != '\0') {
+    int i = 0;
+    while(stop[i] != '\0') {
         pb[i + 1] = stop[i];
         i++;
         
@@ -564,6 +562,8 @@ void send_stop() {
     /* Add end line */
     i++;
     pb[i] = '\0';
+
+    uBit.radio.datagram.send(pb);
     
 } /* send_stop */
 
