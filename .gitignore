@@ -1,4 +1,4 @@
 Java/.idea/workspace.xml
 Java/*.iml
-Java/out/*
+Java/*/out/*
 .idea/*
