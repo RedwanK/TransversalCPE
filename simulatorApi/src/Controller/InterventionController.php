@@ -63,4 +63,24 @@ class InterventionController extends AbstractFOSRestController
         }
         return $this->handleView($this->view($form->getErrors()));
     }
+
+    /**
+     * Resolve an intervention.
+     * @Rest\Get("/interventions/resolve/{id}")
+     *
+     * @return Response
+     */
+    public function getResolveInterventionAction(Request $request, $id)
+    {
+        $repository = $this->getDoctrine()->getRepository(Intervention::class);
+        $intervention = $repository->findOneBy(['id' => $id]);
+        if(!$intervention) {
+            return $this->handleView($this->view(['status' => 'Unknown incident'], Response::HTTP_BAD_REQUEST));
+        }
+        $intervention->setResolvedAt(new \DateTime());
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($intervention);
+        $em->flush();
+        return $this->handleView($this->view(['status' => 'ok'], Response::HTTP_CREATED));
+    }
 }

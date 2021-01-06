@@ -60,4 +60,24 @@ class IncidentController extends AbstractFOSRestController
         }
         return $this->handleView($this->view($form->getErrors()));
     }
+
+    /**
+     * Resolve an incident.
+     * @Rest\Get("/incidents/resolve/{id}")
+     *
+     * @return Response
+     */
+    public function getResolveIncidentAction(Request $request, $id)
+    {
+        $repository = $this->getDoctrine()->getRepository(Incident::class);
+        $incident = $repository->findOneBy(['id' => $id]);
+        if(!$incident) {
+            return $this->handleView($this->view(['status' => 'Unknown incident'], Response::HTTP_BAD_REQUEST));
+        }
+        $incident->setResolvedAt(new \DateTime());
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($incident);
+        $em->flush();
+        return $this->handleView($this->view(['status' => 'ok'], Response::HTTP_CREATED));
+    }
 }
