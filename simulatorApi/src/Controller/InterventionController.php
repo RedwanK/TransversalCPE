@@ -1,9 +1,9 @@
 <?php
 namespace App\Controller;
 use App\Entity\City;
-use App\Entity\Sensor;
+use App\Entity\Intervention;
 use App\Form\CityType;
-use App\Form\SensorType;
+use App\Form\InterventionType;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,39 +12,39 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Incident;
 
 /**
- * Sensor controller.
+ * Intervention controller.
  * @Route("/api", name="api_")
  */
-class SensorController extends AbstractFOSRestController
+class InterventionController extends AbstractFOSRestController
 {
     /**
-     * Lists all Sensors.
-     * @Rest\Get("/sensors/list")
+     * Lists all interventions.
+     * @Rest\Get("/interventions/list")
      *
      * @return Response
      */
-    public function getSensorAction()
+    public function getInterventionAction()
     {
-        $repository = $this->getDoctrine()->getRepository(Sensor::class);
-        $sensors = $repository->findall();
-        return $this->handleView($this->view($sensors));
+        $repository = $this->getDoctrine()->getRepository(Intervention::class);
+        $interventions = $repository->findall();
+        return $this->handleView($this->view($interventions));
     }
 
     /**
-     * Create Sensor.
-     * @Rest\Post("/sensors/create")
+     * Create intervention.
+     * @Rest\Post("/interventions/create")
      *
      * @return Response
      */
-    public function postSensorAction(Request $request)
+    public function postInterventionAction(Request $request)
     {
-        $sensor = new Sensor();
-        $form = $this->createForm(SensorType::class, $sensor);
+        $intervention = new Intervention();
+        $form = $this->createForm(InterventionType::class, $intervention);
         $data = json_decode($request->getContent(), true);
         $form->submit($data);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($sensor);
+            $em->persist($intervention);
             $em->flush();
             return $this->handleView($this->view(['status' => 'ok'], Response::HTTP_CREATED));
         }
