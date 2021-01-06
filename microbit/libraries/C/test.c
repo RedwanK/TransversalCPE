@@ -23,7 +23,7 @@ int main(
 
     /* Create object */
     char str_incident[STR_SIZE] = "x:10.2;y:15.5;v:9.9";
-    incident *icd = create_object_incident_from_string(str_incident);
+    incident *icd = create_object_incident_from_string((const char *)str_incident);
 
     printf("Longitude : %.2f\n", icd->longitude);
     printf("Latitude : %.2f\n", icd->latitude);
@@ -44,7 +44,7 @@ int main(
 
     /* Create object */
     strcpy(str_incident, ":10.2;y:15.5;v:9.9");
-    icd = create_object_incident_from_string(str_incident);
+    icd = create_object_incident_from_string((const char *)str_incident);
 
     /* Test object */
     assert(icd == NULL);
@@ -130,7 +130,7 @@ int main(
 
     strcpy(str_incident, "x:10.2;y:15.5;v:9.9");
 
-    int result = add_incident_from_string(icds, str_incident);
+    int result = add_incident_from_string(icds, (const char *)str_incident);
 
     assert(result == 1);
     assert(icds->icd[DATA_SIZE - 5] != NULL);

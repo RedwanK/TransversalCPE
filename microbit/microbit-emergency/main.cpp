@@ -310,7 +310,67 @@ void receive_protocol() {
                 return;
             
             /* Get dest address */
-            display.scroll(pb);
+            i++;
+            while(pb[i] != ';') {
+                if (pb[i] == '\0' || j >= SN_SIZE) {
+                    return;
+
+                } /* Check if this is the end of packet */
+
+                address[j] = pb[i];
+                i++;
+                j++;
+                
+            } /* Loop until separator */
+            
+            if (j == SN_SIZE)
+                return;
+
+            address[j] = '\0';
+
+            /* Check this is our address */
+            for (j = 0; j < SN_SIZE; j++) {
+                if (address[j] != serial_number[j])
+                    return;
+                    
+            } /* Loop on address */
+
+            /* Check there is separator */
+            if (pb[i] != p_protocol_separator)
+                return;
+            
+            /* Get incident */
+            i++;
+            j = 0;
+            char str_icd[STR_SIZE];
+            while(pb[i] != '\0') {
+                if (j >= STR_SIZE) {
+                    return;
+
+                } /* Check if this is the end of packet */
+
+                str_icd[j] = pb[i];
+                i++;
+                j++;
+                
+            } /* Loop until end of packet */
+
+            if (j == KEY_SIZE)
+                return;
+            
+            str_icd[j] = '\0';
+
+            incident *icd = create_object_incident_from_string((const char *)str_icd);
+
+            if (icd) {
+                char str[STR_SIZE];
+                to_string_incident(icd, str);
+//TODO check bug tostring
+                /* Send to serial */
+                serial.send(str);
+                display.scroll(str);
+
+            } /* Incident not NULL */
         }
         
     }
