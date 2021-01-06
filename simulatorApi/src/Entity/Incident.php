@@ -50,6 +50,12 @@ class Incident {
     private $location;
 
     /**
+     * @ManyToOne(targetEntity="Sensor")
+     * @JoinColumn(name="sensor_id", referencedColumnName="id")
+     */
+    private $sensor;
+
+    /**
      * @return mixed
      */
     public function getId()
@@ -146,6 +152,24 @@ class Incident {
     public function setLocation($location)
     {
         $this->location = $location;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSensor()
+    {
+        return $this->sensor;
+    }
+
+    /**
+     * @param mixed $sensor
+     * @return Incident
+     */
+    public function setSensor($sensor)
+    {
+        $this->sensor = $sensor;
         return $this;
     }
 
