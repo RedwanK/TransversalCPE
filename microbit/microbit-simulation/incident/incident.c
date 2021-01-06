@@ -47,7 +47,7 @@ incident *create_object_incident(
  * A new incident allocate in memory or NULL in error case.
  */
 incident *create_object_incident_from_string(
-    char *str
+    const char *str
 ) {
     char delim[] = ";:";
     char *token = strtok(str, delim);
@@ -67,19 +67,19 @@ incident *create_object_incident_from_string(
             v = 1;
         else {
             if (x == 1) {
-                float latitude = atof(token);;
+                float latitude = atof(token);
 
                 icd->latitude = latitude;
                 x = 0;
 
             } else if (y == 1) {
-                float longitude = atof(token);;
+                float longitude = atof(token);
 
                 icd->longitude = longitude;
                 y = 0;
 
             } else if (v == 1) {
-                float intensity = atof(token);;
+                float intensity = atof(token);
 
                 icd->intensity = intensity;
                 v = 0;
@@ -149,7 +149,7 @@ incidents *new_incidents() {
  */
 int add_incident_from_string(
     incidents *icds,
-    char *str
+    const char *str
 ) {
     /* Check no icds */
     if (!icds)

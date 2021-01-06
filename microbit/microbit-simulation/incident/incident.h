@@ -38,7 +38,7 @@ incident *create_object_incident(
  * : : delimiter between the name (x, y or v) and the value
  */
 incident *create_object_incident_from_string(
-    char *str
+    const char *str
 );
 
 /* @brief
@@ -59,7 +59,7 @@ incidents *new_incidents();
  */
 int add_incident_from_string(
     incidents *icds,
-    char *str
+    const char *str
 );
 
 /* @brief
