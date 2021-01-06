@@ -165,7 +165,7 @@ void readSerial() {
 
         }
 
-        fiber_sleep(1);
+        fiber_sleep(10);
 
     }
 
@@ -308,9 +308,13 @@ void receive_protocol() {
                         if (send_acquittement == 0) {
                             if (error == 0) {
                                 set_key(tmp_key);
-                                send_ack(0);
+
                                 /* Connected */
                                 connect(address);
+
+                                send_ack(0);
+
+                                display.print("C");
 
                             } /* Set the key */
 
@@ -335,11 +339,14 @@ void receive_protocol() {
 
                 } else {
                     /* Already connected so send the current key */
-                    /* Send ack */
-                    send_ack(1);
 
                     /* Connected */
                     connect(address);
+
+                    /* Send ack */
+                    send_ack(1);
+
+                    display.print("C");
 
                 }
                 
@@ -365,6 +372,10 @@ void receive_protocol() {
                 send_acquittement = 0;
                 connected = 0;
                 connected_number = 0;
+                for (int x = 0; x < NUMBER_SN; x++) {
+                    connected_address[x][0] = '\0';
+                    
+                } /* For each address */
                 send_stop();
                 display.print("D");
 
@@ -377,10 +388,7 @@ void receive_protocol() {
         
     }
 
-    if (connected == 1)
-        display.print("C");
-
-    fiber_sleep(1);
+    fiber_sleep(10);
     
 } /* receive_protocol */
 
@@ -405,7 +413,10 @@ int check_address(char *address) {
 } /* check_address */
 
 int check_connected(char *address) {
-    for (int i = 0; i < NUMBER_SN; i++) {
+    if (connected_number == 0)
+        return 0;
+    
+    for (int i = 0; i < connected_number; i++) {
         int error = 0;
 
         for (int j = 0; j < SN_SIZE; j++) {
@@ -470,7 +481,7 @@ void send_protocol() {
         
     }
 
-    fiber_sleep(1);
+    fiber_sleep(10);
 
 } /* send_protocol */
 
@@ -507,7 +518,7 @@ void send_init() {
     /* Initialise the connexion */
     display.print("I");
 
-    fiber_sleep(500);
+    fiber_sleep(600);
 
     PacketBuffer pb(M_PROTOCOL_SIZE + SN_SIZE);
     
@@ -546,7 +557,7 @@ void send_stop() {
     /* Stop the connexion */
     display.print("S");
 
-    fiber_sleep(500);
+    fiber_sleep(600);
 
     PacketBuffer pb(M_PROTOCOL_SIZE + SN_SIZE);
     
@@ -571,7 +582,7 @@ void send_ack(int cipher) {
     /* Ack the connexion */
     display.print("A");
 
-    fiber_sleep(500);
+    fiber_sleep(600);
 
     PacketBuffer pb(M_PROTOCOL_SIZE + SN_SIZE + KEY_SIZE);
     
