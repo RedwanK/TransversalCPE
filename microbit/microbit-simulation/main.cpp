@@ -51,8 +51,6 @@ int check_address(char *address);
 
 int check_connected(char *address);
 
-int check_response();
-
 void connect(char *address);
 
 void send_protocol();
@@ -434,23 +432,6 @@ int check_connected(char *address) {
     return 0;
     
 } /* check_connected */
-
-int check_response() {
-    int number_packets = 0;
-
-    for (int i = 0; i < 3; i++) {
-        number_packets = uBit.radio.dataReady();
-        if (number_packets > 0)
-            return 1;
-        
-        fiber_sleep(600);
-                
-    } /* Wait and check we receive a paquet */
-    
-    /* Callback */
-    return 0;
-    
-} /* check_response */
 
 void connect(char *address) {    
     if (connected_number < NUMBER_SN) {
