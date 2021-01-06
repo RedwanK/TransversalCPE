@@ -15,7 +15,7 @@ use App\Form\IncidentType;
 class IncidentController extends AbstractFOSRestController
 {
     /**
-     * Lists all Movies.
+     * Lists all Incidents.
      * @Rest\Get("/incidents/list")
      *
      * @return Response
@@ -24,6 +24,19 @@ class IncidentController extends AbstractFOSRestController
     {
         $repository = $this->getDoctrine()->getRepository(Incident::class);
         $incidents = $repository->findall();
+        return $this->handleView($this->view($incidents));
+    }
+
+    /**
+     * Lists all unresolved Incidents.
+     * @Rest\Get("/incidents/unresolved/list")
+     *
+     * @return Response
+     */
+    public function getUnresolvedIncidentAction()
+    {
+        $repository = $this->getDoctrine()->getRepository(Incident::class);
+        $incidents = $repository->findBy(['resolved_at' => null]);
         return $this->handleView($this->view($incidents));
     }
 
@@ -46,5 +59,25 @@ class IncidentController extends AbstractFOSRestController
             return $this->handleView($this->view(['status' => 'ok'], Response::HTTP_CREATED));
         }
         return $this->handleView($this->view($form->getErrors()));
+    }
+
+    /**
+     * Resolve an incident.
+     * @Rest\Get("/incidents/resolve/{id}")
+     *
+     * @return Response
+     */
+    public function getResolveIncidentAction(Request $request, $id)
+    {
+        $repository = $this->getDoctrine()->getRepository(Incident::class);
+        $incident = $repository->findOneBy(['id' => $id]);
+        if(!$incident) {
+            return $this->handleView($this->view(['status' => 'Unknown incident'], Response::HTTP_BAD_REQUEST));
+        }
+        $incident->setResolvedAt(new \DateTime());
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($incident);
+        $em->flush();
+        return $this->handleView($this->view(['status' => 'ok'], Response::HTTP_CREATED));
     }
 }

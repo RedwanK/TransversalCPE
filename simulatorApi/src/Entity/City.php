@@ -1,6 +1,7 @@
 <?php
 namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\OneToMany;
 use Gedmo\Timestampable\Traits\Timestampable;
 use Symfony\Component\Validator\Constraints as Assert;
 /**

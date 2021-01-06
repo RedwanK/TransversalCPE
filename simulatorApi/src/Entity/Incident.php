@@ -20,16 +20,16 @@ class Incident {
     private $id;
 
     /**
-     * @ORM\Column(type="float", nullable=false)
+     * @ORM\Column(type="datetime", nullable=true)
      *
      */
-    private $latitude;
+    private $resolved_at;
 
     /**
-     * @ORM\Column(type="float", nullable=false)
+     * @ORM\Column(type="text", nullable=true)
      *
      */
-    private $longitude;
+    private $type;
 
     /**
      * @ORM\Column(type="float", nullable=false)
@@ -38,10 +38,22 @@ class Incident {
     private $intensity;
 
     /**
-     * @ManyToOne(targetEntity="City")
-     * @JoinColumn(name="city_id", referencedColumnName="id")
+     * @ORM\Column(type="text", nullable=false)
+     *
      */
-    private $city;
+    private $codeIncident;
+
+    /**
+     * @ManyToOne (targetEntity="Location")
+     * @JoinColumn(name="location_id", referencedColumnName="id")
+     */
+    private $location;
+
+    /**
+     * @ManyToOne(targetEntity="Sensor")
+     * @JoinColumn(name="sensor_id", referencedColumnName="id")
+     */
+    private $sensor;
 
     /**
      * @return mixed
@@ -74,60 +86,91 @@ class Incident {
     /**
      * @return mixed
      */
-    public function getLatitude()
+    public function getResolvedAt()
     {
-        return $this->latitude;
+        return $this->resolved_at;
     }
 
     /**
-     * @param mixed $latitude
-     *
+     * @param mixed $resolved_at
      * @return Incident
      */
-    public function setLatitude($latitude)
+    public function setResolvedAt($resolved_at)
     {
-        $this->latitude = $latitude;
-
+        $this->resolved_at = $resolved_at;
         return $this;
     }
 
     /**
      * @return mixed
      */
-    public function getLongitude()
+    public function getType()
     {
-        return $this->longitude;
+        return $this->type;
     }
 
     /**
-     * @param mixed $longitude
-     *
+     * @param mixed $type
      * @return Incident
      */
-    public function setLongitude($longitude)
+    public function setType($type)
     {
-        $this->longitude = $longitude;
-
+        $this->type = $type;
         return $this;
     }
 
     /**
      * @return mixed
      */
-    public function getCity()
+    public function getCodeIncident()
     {
-        return $this->city;
+        return $this->codeIncident;
     }
 
     /**
-     * @param mixed $city
-     *
+     * @param mixed $codeIncident
      * @return Incident
      */
-    public function setCity($city)
+    public function setCodeIncident($codeIncident)
     {
-        $this->city = $city;
-
+        $this->codeIncident = $codeIncident;
         return $this;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
+
+    /**
+     * @param mixed $location
+     * @return Incident
+     */
+    public function setLocation($location)
+    {
+        $this->location = $location;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSensor()
+    {
+        return $this->sensor;
+    }
+
+    /**
+     * @param mixed $sensor
+     * @return Incident
+     */
+    public function setSensor($sensor)
+    {
+        $this->sensor = $sensor;
+        return $this;
+    }
+
 }

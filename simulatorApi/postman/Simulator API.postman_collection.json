@@ -1,97 +1,317 @@
 {
 	"info": {
-		"_postman_id": "989e0709-3e17-45af-bd98-b53433276c6e",
+		"_postman_id": "cc8fc7cf-007b-495d-9d7c-22ab1714a5a7",
 		"name": "Simulator API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "List incidents",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
+			"name": "Incident",
+			"item": [
+				{
+					"name": "List incidents",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENV}}/incidents/list",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"incidents",
+								"list"
+							]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{ENV}}/incidents/list",
-					"host": [
-						"{{ENV}}"
-					],
-					"path": [
-						"incidents",
-						"list"
-					]
+				{
+					"name": "Unresolved incidents lists",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/incidents/unresolved/list",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"incidents",
+								"unresolved",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Resolve incident",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/incidents/resolve/156",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"incidents",
+								"resolve",
+								"156"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create incident",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\" : \"fire\",\n    \"codeIncident\": \"ly012021_256\",\n    \"intensity\": 3.9,\n    \"location\": 1,\n    \"sensor\": 1,\n    \"resolved_at\": {\n        \"date\": {\n            \"year\": 2020,\n            \"month\": 12,\n            \"day\": 25\n        },\n        \"time\": {\n            \"hour\": 15,\n            \"minute\": 26\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "{{ENV}}/incidents/create",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"incidents",
+								"create"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "City list",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{ENV}}/cities/list",
-					"host": [
-						"{{ENV}}"
-					],
-					"path": [
-						"cities",
-						"list"
-					]
+			"name": "City",
+			"item": [
+				{
+					"name": "City list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/cities/list",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"cities",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create City",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Lyon\",\n    \"country\": \"FRA\"\n}"
+						},
+						"url": {
+							"raw": "{{ENV}}/cities/create",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"cities",
+								"create"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Create City",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"Paris\",\n    \"country\": \"FRA\"\n}"
+			"name": "Location",
+			"item": [
+				{
+					"name": "Location list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/locations/list",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"locations",
+								"list"
+							]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{ENV}}/cities/create",
-					"host": [
-						"{{ENV}}"
-					],
-					"path": [
-						"cities",
-						"create"
-					]
+				{
+					"name": "Create Location",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"latitude\": 45.7640,\n    \"longitude\": 4.8357,\n    \"city\": 1\n}"
+						},
+						"url": {
+							"raw": "{{ENV}}/locations/create",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"locations",
+								"create"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Create incident",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"latitude\" : 45.759846,\n    \"longitude\": 4.881366,\n    \"intensity\": 5.0,\n    \"city\": 1\n}"
+			"name": "Sensor",
+			"item": [
+				{
+					"name": "Sensor list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/sensors/list",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"sensors",
+								"list"
+							]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{ENV}}/incidents/create",
-					"host": [
-						"{{ENV}}"
-					],
-					"path": [
-						"incidents",
-						"create"
-					]
+				{
+					"name": "Create Sensor",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Capteur thermique VX4\",\n    \"reference\": \"ct_vx4_ly\",\n    \"type\": \"temperature\",\n    \"location\": 1\n}"
+						},
+						"url": {
+							"raw": "{{ENV}}/sensors/create",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"sensors",
+								"create"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
+		},
+		{
+			"name": "Intervention",
+			"item": [
+				{
+					"name": "Intervention list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/interventions/list",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"interventions",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unresolved Interventions lists",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/interventions/unresolved/list",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"interventions",
+								"unresolved",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Resolve intervention",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/interventions/resolve/1",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"interventions",
+								"resolve",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create intervention",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"coefficient\" : 1.2,\n    \"numberVehicles\": 1,\n    \"numberAgents\": 6,\n    \"incident\": 2,\n    \"resolvedAt\": {\n        \"date\": {\n            \"year\": 2020,\n            \"month\": 12,\n            \"day\": 25\n        },\n        \"time\": {\n            \"hour\": 15,\n            \"minute\": 26\n        }\n    }\n}"
+						},
+						"url": {
+							"raw": "{{ENV}}/interventions/create",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"interventions",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }
