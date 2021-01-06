@@ -1,2 +1,4 @@
-package com.emergencyManager;public class TeamGenerator {
+package com.emergencyManager;
+
+public class TeamGenerator {
 }

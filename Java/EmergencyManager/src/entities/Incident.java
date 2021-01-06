@@ -16,7 +16,7 @@ public class Incident {
         this.id = id;
     }
 
-    public Incident(int id, float latitude, float longitude, int cityId, int intensity, Date updatedAt) {
+    public Incident(int id, float latitude, float longitude, int cityId, float intensity, Date updatedAt) {
         this.id = id;
         this.latitude = latitude;
         this.longitude = longitude;
