@@ -7,6 +7,7 @@ use App\Entity\Location;
 use App\Entity\Sensor;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -28,6 +29,7 @@ class IncidentType extends AbstractType
                 ->add('sensor', EntityType::class, [
                     'class' => Sensor::class,
                 ])
+                ->add('resolved_at', DateTimeType::class)
         ;
     }
 

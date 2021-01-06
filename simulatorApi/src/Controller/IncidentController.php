@@ -15,7 +15,7 @@ use App\Form\IncidentType;
 class IncidentController extends AbstractFOSRestController
 {
     /**
-     * Lists all Movies.
+     * Lists all Incidents.
      * @Rest\Get("/incidents/list")
      *
      * @return Response
@@ -24,6 +24,19 @@ class IncidentController extends AbstractFOSRestController
     {
         $repository = $this->getDoctrine()->getRepository(Incident::class);
         $incidents = $repository->findall();
+        return $this->handleView($this->view($incidents));
+    }
+
+    /**
+     * Lists all unresolved Incidents.
+     * @Rest\Get("/incidents/unresolved/list")
+     *
+     * @return Response
+     */
+    public function getUnresolvedIncidentAction()
+    {
+        $repository = $this->getDoctrine()->getRepository(Incident::class);
+        $incidents = $repository->findBy(['resolved_at' => null]);
         return $this->handleView($this->view($incidents));
     }
 

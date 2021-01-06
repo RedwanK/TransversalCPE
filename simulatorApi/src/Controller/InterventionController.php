@@ -31,6 +31,19 @@ class InterventionController extends AbstractFOSRestController
     }
 
     /**
+     * Lists all unresolved interventions.
+     * @Rest\Get("/interventions/unresolved/list")
+     *
+     * @return Response
+     */
+    public function getUnresolvedInterventionAction()
+    {
+        $repository = $this->getDoctrine()->getRepository(Intervention::class);
+        $interventions = $repository->findBy(['resolvedAt' => null]);
+        return $this->handleView($this->view($interventions));
+    }
+
+    /**
      * Create intervention.
      * @Rest\Post("/interventions/create")
      *
