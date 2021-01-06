@@ -89,14 +89,11 @@ void receive_protocol() {
                 
             while(init[i] != '\0') {
                 if (pb[i + 1] != init[i]) {
-                    error = 1;    
+                    return;
                 }
                 i++;
                 
             } /* Check no errors */
-            
-            if (error == 1)
-                return;
                 
             /* Check there is separator */
             i++;
@@ -108,13 +105,16 @@ void receive_protocol() {
             char address[SN_SIZE];
             while(pb[i] != '\0') {
                 if (j >= SN_SIZE)
-                    break;
+                    return;
 
                 address[j] = pb[i];
                 i++;
                 j++;
                 
             } /* Loop until end of packet */
+
+            if (j >= SN_SIZE)
+                return;
             
             address[j] = '\0';
             
@@ -144,14 +144,11 @@ void receive_protocol() {
                 
             while(ack[i] != '\0') {
                 if (pb[i + 1] != ack[i]) {
-                    error = 1;    
+                    return;
                 }
                 i++;
                 
             } /* Check no errors */
-            
-            if (error == 1)
-                return;
                 
             /* Check there is separator */
             i++;
@@ -173,6 +170,9 @@ void receive_protocol() {
                 j++;
                 
             } /* Loop until end of packet or before separator */
+
+            if (j >= SN_SIZE)
+                return;
             
             address[j] = '\0';
             
@@ -193,9 +193,8 @@ void receive_protocol() {
                         j = 0;
                         char tmp_key[KEY_SIZE];
                         while(pb[i] != '\0') {
-                            if ( j >= KEY_SIZE) {
-                                error = 1;
-                                break;
+                            if (j >= KEY_SIZE) {
+                                return;
 
                             } /* Check if this is the end of packet */
 
@@ -204,30 +203,28 @@ void receive_protocol() {
                             j++;
                             
                         } /* Loop until end of packet */
+
+                        if (j == KEY_SIZE)
+                            return;
                         
                         tmp_key[j] = '\0';
 
                         if (send_acquittement == 0) {
-                            if (error == 0) {
-                                set_key(tmp_key);
+                            /* Set the key */
+                            set_key(tmp_key);
 
-                                /* Connected */
-                                connect(address);
+                            /* Connected */
+                            connect(address);
 
-                                send_ack(0);
+                            send_ack(0);
 
-                                display.print("C");
-
-                            } /* Set the key */
+                            display.print("C");
 
                         } else {
-                            if (error == 0) {
-                                /* The other micorbit already in communication so get his key */
-                                set_key(tmp_key);
-                                /* Connected */
-                                connect(address);
-
-                            } /* If there is a key set it */
+                            /* The other micorbit already in communication so get his key */
+                            set_key(tmp_key);
+                            /* Connected */
+                            connect(address);
 
                         }
 
@@ -255,19 +252,15 @@ void receive_protocol() {
             } /* Address is trusted */
         } else if (pb[1] == 'S') {
             /* STOP case */
-            int i = 0,
-                error = 0;
+            int i = 0;
                 
             while(stop[i] != '\0') {
                 if (pb[i + 1] != stop[i]) {
-                    error = 1;    
+                    return;
                 }
                 i++;
                 
             } /* Check no errors */
-            
-            if (error == 1)
-                return;
 
             if (connected == 1) {
                 send_initialise = 0;
@@ -285,13 +278,40 @@ void receive_protocol() {
 
         }
         
-    } else {
+    } else if (connected == 1) {
         /* Communication case */
-        if (connected == 1) {
-            if ((char)pb[0] != NULL) {
-                display.scroll(pb);
-            }
-        } 
+        int i = 0,
+            j = 0;
+            
+        /* Get source address */
+        char address[SN_SIZE];
+        while(pb[i] != ';') {
+            if (pb[i] == '\0' || i >= SN_SIZE) {
+                return;
+
+            } /* Check if this is the end of packet */
+
+            address[i] = pb[i];
+            i++;
+            
+        } /* Loop until separator */
+        
+        if (i == SN_SIZE)
+            return;
+
+        address[i] = '\0';
+        
+        /* Check the address is connected */
+        int found = check_connected(address);
+
+        if (found == 1) {
+            /* Check there is separator */
+            if (pb[i] != p_protocol_separator)
+                return;
+            
+            /* Get dest address */
+            display.scroll(pb);
+        }
         
     }
 
@@ -531,18 +551,18 @@ void generate_random_key() {
     char c;
     int r;
 
-    /* Initialize the random number generator */
-    srand(time(NULL));
-
-    for (int i = 0; i < KEY_SIZE; i++) {    
+    for (int i = 0; i < KEY_SIZE - 1; i++) {    
         /* Generate a random number */
-        r = rand() % 26;
+        r = uBit.random(26);
         /* Convert to a character from a-z */
         c = 'a' + r;
         
         key[i] = c;
 
     } /* Loop on size of key */
+
+    /* Add end line */
+    key[KEY_SIZE - 1] = '\0';
 
 } /* generate_random_key */
 
