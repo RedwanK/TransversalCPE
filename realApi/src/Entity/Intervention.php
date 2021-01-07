@@ -2,6 +2,8 @@
 namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\ORM\Mapping\OneToOne;
+
 /**
  * @ORM\Entity
  * @ORM\Table(name="intervention")
@@ -40,6 +42,12 @@ class Intervention {
      * @ORM\JoinColumn(name="team_id", referencedColumnName="id")
      */
     private $team;
+
+    /**
+     * @OneToOne(targetEntity="Incident")
+     * @ORM\JoinColumn(name="incident_id", referencedColumnName="id")
+     */
+    private $incident;
 
     /**
      * @return mixed
@@ -118,6 +126,42 @@ class Intervention {
     public function setResolvedAt($resolvedAt)
     {
         $this->resolvedAt = $resolvedAt;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTeam()
+    {
+        return $this->team;
+    }
+
+    /**
+     * @param mixed $team
+     * @return Intervention
+     */
+    public function setTeam($team)
+    {
+        $this->team = $team;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIncident()
+    {
+        return $this->incident;
+    }
+
+    /**
+     * @param mixed $incident
+     * @return Intervention
+     */
+    public function setIncident($incident)
+    {
+        $this->incident = $incident;
         return $this;
     }
 }
