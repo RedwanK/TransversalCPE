@@ -36,7 +36,7 @@ class ObjectController extends AbstractFOSRestController
      *
      * @return Response
      */
-    public function postCityAction(Request $request, $object)
+    public function postObjectAction(Request $request, $object)
     {
         $objectStr = preg_replace_callback("/(?:^|_)([a-z])/", function($matches) {
             return strtoupper($matches[1]);
