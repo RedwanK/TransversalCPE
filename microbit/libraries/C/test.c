@@ -7,6 +7,9 @@
 
 #include "test.h"
 
+/* Default key */
+const char default_key[] = "J'chlibs";
+
 /* @brief
  * Main fonction.
  */
@@ -141,7 +144,36 @@ int main(
     delete_incidents(icds);
     icds = NULL;
 
-    printf("******** Test passed ********\n");
+    printf("******** Test incident passed ********\n");
+
+    /**** Test cipher ****/
+    printf("\n******** Test cipher ********\n");
+
+    char msg[] = "#ACK:1:geioj";
+    int msgLen = strlen(msg);
+
+    char encryptedMsg[msgLen], decryptedMsg[msgLen];
+
+    printf("Original Message: %s\n", msg);
+    printf("Key: %s\n", default_key);
+ 
+    /* Encryption */
+    encrypt(default_key, msg, encryptedMsg);
+
+    printf("Encrypted Message: %s\n", encryptedMsg);
+ 
+    /* Decryption */
+    decrypt(default_key, encryptedMsg, decryptedMsg);
+
+    printf("Decrypted Message: %s\n", decryptedMsg);
+
+    for(i = 0; i < msgLen; i++) {
+        /* Test values */
+        assert(decryptedMsg[i] == msg[i]);
+
+    }
+ 
+    printf("******** Test cipher passed ********\n");
     
     return 0;
 

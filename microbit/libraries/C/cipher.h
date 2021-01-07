@@ -8,7 +8,7 @@
  */
 
 /* Default key */
-static const char default_key[] = "J'adoreLesChlibs";
+extern const char default_key[];
 
 /* @brief
  * Vigenere Cipher Encryption
@@ -16,7 +16,7 @@ static const char default_key[] = "J'adoreLesChlibs";
  * Repeat the same process for all remaining alphabets in message text.
  */
 void encrypt(
-    char *key, 
+    const char *key, 
     char *message, 
     char *encryptedMsg
 );
@@ -28,7 +28,7 @@ void encrypt(
  * Repeat the same process for all the alphabets in encrypted message.
  */
 void decrypt(
-    char *key, 
+    const char *key, 
     char *encryptedMsg,
     char *decryptedMsg
 );
@@ -37,7 +37,7 @@ void decrypt(
  * Here we have to obtain a new key by repeating the given key till its length become equal to original message length.
  */
 void generateKey(
-    char *key, 
+    const char *key, 
     char *newKey, 
     int msgLen
 );

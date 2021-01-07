@@ -1,3 +1,4 @@
 incident.o
+cipher.o
 test.o
 test
