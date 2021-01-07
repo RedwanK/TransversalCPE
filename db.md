@@ -1,50 +1,54 @@
-incident:
-- id
-- latitude
-- longitude
-- city_id
-- intensity
-- updated_at
+# SIMULATOR DB
+###incident:
+- id (int - PK)
+- created_at (datetime)
+- updated_at (datetime)
+- pending (boolean)
+- resolved_at (datetime)
+- spot_id (integer - FK spot)
+- intensity (double)
 
-city:
-- id
-- name
-- country
+###city:
+- id (integer - PK)
+- name (string)
+- country (string)
 
-vehicle:
-- id
-- type
-- fuel
-- site_id
+###spot:
+- id (integer - PK)
+- latitude (double)
+- longitude (double)
+- city_id (integer - FK city)
 
-site:
-- id
-- city_id
-- postal_code
-- latitude
-- longitude
-- street
-- phone_number
+# REAL DB
+###vehicle:
+- id (integer - PK)
+- category_vehicle_id (integer - FK category_vehicle)
+- fuel (string)
+- site_id (integer - FK site)
 
-agent:
-- id
-- firstname
-- lastname
-- address
-- job
-- site_id
+###site:
+- id (integer - PK)
+- city_id (integer - FK city)
+- zipcode (integer)
+- latitude (double)
+- longitude (double)
+- phone_number (string)
 
-job:
-- id
-- name
-- hierarchy
-- agent_id
+###city:
+- id (integer - PK)
+- name (string)
+- country (string)
 
-audit:
-- id
-[...incident data...]
-    - updated_at
-    - city_name
-    - lat
-    - long
-    - intensity
+###agent:
+- id (integer - PK)
+- firstname (string)
+- lastname (string)
+- street (string)
+- zipcode (integer)
+- city_id (integer - FK city)
+- job_id (integer - FK job) 
+- site_id (integer - FK site)
+
+###job:
+- id (integer - PK)
+- name (string)
