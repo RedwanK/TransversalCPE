@@ -14,7 +14,7 @@ import org.json.simple.parser.ParseException;
 
 public class IncidentHandler {
 
-    private static volatile String jsonString = "";
+    private static volatile String jsonStringInci = "";
     private static volatile ReentrantLock lock = new ReentrantLock();
 
     private Thread thread1 = new Thread() {
@@ -26,7 +26,7 @@ public class IncidentHandler {
                 lock.lock();
                 try {
                     Api api = new Api("http://localhost");
-                    jsonString = api.makeRequest("GET", "/api/incidents/list");
+                    jsonStringInci = api.makeRequest("GET", "/api/incidents/list");
                     TimeUnit.SECONDS.sleep(5);
                 } catch (InterruptedException e) {
                     return;
@@ -53,7 +53,7 @@ public class IncidentHandler {
         JSONArray jarry = new JSONArray();
         lock.lock();
         try {
-            jarry = (JSONArray) pars.parse(jsonString);
+            jarry = (JSONArray) pars.parse(jsonStringInci);
             int i = 0;
             while (i < jarry.size()) {
                 JSONObject o = (JSONObject) jarry.get(i);
