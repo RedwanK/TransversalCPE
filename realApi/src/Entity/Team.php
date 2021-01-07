@@ -35,6 +35,7 @@ class Team {
     public function __construct()
     {
         $this->agents = new ArrayCollection();
+        $this->vehicles = new ArrayCollection();
     }
 
     /**

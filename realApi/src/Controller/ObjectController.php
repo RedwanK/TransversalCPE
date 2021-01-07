@@ -38,12 +38,12 @@ class ObjectController extends AbstractFOSRestController
      */
     public function postCityAction(Request $request, $object)
     {
-        $object = preg_replace_callback("/(?:^|_)([a-z])/", function($matches) {
+        $objectStr = preg_replace_callback("/(?:^|_)([a-z])/", function($matches) {
             return strtoupper($matches[1]);
         }, $object);
-        $classname = "App\Entity\\".ucfirst($object);
+        $classname = "App\Entity\\".ucfirst($objectStr);
         $object = new $classname();
-        $classtype = "App\Form\\".ucfirst($object)."Type";
+        $classtype = "App\Form\\".ucfirst($objectStr)."Type";
         $form = $this->createForm($classtype, $object);
         $data = json_decode($request->getContent(), true);
         $form->submit($data);
