@@ -1,0 +1,414 @@
+{
+	"info": {
+		"_postman_id": "ae6fbea1-eac0-4d60-872f-88ea26f756e6",
+		"name": "Emergency API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Interventions",
+			"item": [
+				{
+					"name": "List Interventions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/intervention/list",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"intervention",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create intervention",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"coefficient\" : 1.2,\n    \"numberVehicles\": 1,\n    \"numberAgents\": 6,\n    \"incident\": 1\n}"
+						},
+						"url": {
+							"raw": "{{ENV}}/intervention/create",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"intervention",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Agent",
+			"item": [
+				{
+					"name": "List Agents",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/agent/list",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"agent",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Agent",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstname\": \"Patrick\",\n    \"lastname\": \"Castillo\",\n    \"phoneNumber\": \"+33625984587\",\n    \"street\": \"36 rue du fournil de Berson\",\n    \"zipcode\": \"01700\",\n    \"job\": 1\n}"
+						},
+						"url": {
+							"raw": "{{ENV}}/agent/create",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"agent",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "CategoryVehicle",
+			"item": [
+				{
+					"name": "List category Vehicle",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/category_vehicle/list",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"category_vehicle",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Category Vehicle",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Grande Echelle\",\n    \"capacity\": 8,\n    \"coefficient\": 2\n}"
+						},
+						"url": {
+							"raw": "{{ENV}}/category_vehicle/create",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"category_vehicle",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "City",
+			"item": [
+				{
+					"name": "List City",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/city/list",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"city",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create City",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Lyon\",\n    \"country\": \"FRA\"\n}"
+						},
+						"url": {
+							"raw": "{{ENV}}/city/create",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"city",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Incident",
+			"item": [
+				{
+					"name": "List Incident",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/incident/list",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"incident",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create incident",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"type\" : \"fire\",\n    \"codeIncident\": \"ly012021_256\",\n    \"intensity\": 3.9,\n    \"location\": 1\n}"
+						},
+						"url": {
+							"raw": "{{ENV}}/incident/create",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"incident",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Job",
+			"item": [
+				{
+					"name": "List job",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/job/list",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"job",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Job",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Lieutenant\",\n    \"coefficient\": 1.056\n}"
+						},
+						"url": {
+							"raw": "{{ENV}}/job/create",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"job",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Location",
+			"item": [
+				{
+					"name": "List Location",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/location/list",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"location",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Location",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"latitude\": 45.7640,\n    \"longitude\": 4.8357,\n    \"city\": 1\n}"
+						},
+						"url": {
+							"raw": "{{ENV}}/location/create",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"location",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Team",
+			"item": [
+				{
+					"name": "List Team",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/team/list",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"team",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Team",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Delta S4\",\n    \"agents\": [1,2]\n}"
+						},
+						"url": {
+							"raw": "{{ENV}}/team/create",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"team",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Vehicle",
+			"item": [
+				{
+					"name": "List Vehicle",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/vehicle/list",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"vehicle",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Vehicle",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"registrationNumber\": \"AJ-630-KR\",\n    \"fuel\": \"diesel\",\n    \"categoryVehicle\": 1,\n    \"team\": 1\n}"
+						},
+						"url": {
+							"raw": "{{ENV}}/vehicle/create",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"vehicle",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
