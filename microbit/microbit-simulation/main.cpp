@@ -3,6 +3,7 @@
 /* Include C libraries */
 extern "C" {
     #include "incident.h"
+    #include "cipher.h"
 };
 
 /* Constant */
@@ -10,16 +11,18 @@ extern "C" {
 #define KEY_SIZE 8
 #define NUMBER_SN 3
 #define M_PROTOCOL_SIZE 7
-static const char m_protocol_separator = ':';
-static const char p_protocol_separator = ';';
-static const char init[] = "INIT";
-static const char ack[] = "ACK";
-static const char stop[] = "STOP";
-static const char trusted_address[NUMBER_SN][SN_SIZE] =
+const char m_protocol_separator = ':';
+const char p_protocol_separator = ';';
+const char init[] = "INIT";
+const char ack[] = "ACK";
+const char stop[] = "STOP";
+const char trusted_address[NUMBER_SN][SN_SIZE] =
 { 
     "1",
     "3"
 };
+/* Default key */
+const char default_key[] = "J'chlibs";
 
 /* Global var */
 int connected = 0;
@@ -128,17 +131,38 @@ void readSerial() {
 
 void receive_protocol() {
     /* Receive packet */
-    PacketBuffer pb = uBit.radio.datagram.recv();
-        
+    PacketBuffer r = uBit.radio.datagram.recv();
+
+    char d[1], e[1];
+    e[0] = (char)r[0];
+    decrypt(default_key, e, d);
+    
     /* Check if the paquet is protocol */
-    if ((char)pb[0] == '#') {
+    if (d[0] == '#') {
         //display.scroll(pb);
+
+        /* Decrypt message */
+        char pb_e[MICROBIT_RADIO_MAX_PACKET_SIZE],
+            pb[MICROBIT_RADIO_MAX_PACKET_SIZE];
+        int x = 0;
+        while(r[x] != '\0' && x < MICROBIT_RADIO_MAX_PACKET_SIZE) {
+            pb_e[x] = (char)r[x];
+            x++;
+
+        } /* Get all message */
+
+        if (x >= MICROBIT_RADIO_MAX_PACKET_SIZE)
+            pb_e[MICROBIT_RADIO_MAX_PACKET_SIZE - 1] = '\0';
+        else
+            pb_e[x] = '\0';
+        
+        decrypt(default_key, pb_e, pb);
+
         /* Protocol case */
-        if ((char)pb[1] == 'I') {
+        if (pb[1] == 'I') {
             /* INIT case */
             int i = 0,
-                j = 0,
-                error = 0;
+                j = 0;
                 
             while(init[i] != '\0') {
                 if (pb[i + 1] != init[i]) {
@@ -331,10 +355,7 @@ void receive_protocol() {
 
         }
         
-    } else {
-        /* Communication case */
-        
-    }
+    } 
 
     fiber_sleep(50);
     
@@ -451,7 +472,7 @@ void send_init() {
 
     fiber_sleep(600);
 
-    PacketBuffer pb(M_PROTOCOL_SIZE + SN_SIZE);
+    char pb[M_PROTOCOL_SIZE + SN_SIZE];
     
     pb[0] = '#';
     
@@ -478,7 +499,18 @@ void send_init() {
     /* Add end line */
     pb[i] = '\0';
     
-    uBit.radio.datagram.send(pb);
+    /* Encryption */
+    char encryptedMsg[M_PROTOCOL_SIZE + SN_SIZE];
+    encrypt(default_key, pb, encryptedMsg);
+    
+    PacketBuffer s(M_PROTOCOL_SIZE + SN_SIZE);
+    
+    for (i = 0; i < M_PROTOCOL_SIZE + SN_SIZE; i++) {
+        s[i] = encryptedMsg[i];
+            
+    } /* Copy in buffer */
+    
+    uBit.radio.datagram.send(s);
 
     send_initialise = 1;
     
@@ -490,7 +522,7 @@ void send_stop() {
 
     fiber_sleep(600);
 
-    PacketBuffer pb(M_PROTOCOL_SIZE + SN_SIZE);
+    char pb[M_PROTOCOL_SIZE + SN_SIZE];
     
     pb[0] = '#';
     
@@ -504,8 +536,19 @@ void send_stop() {
     /* Add end line */
     i++;
     pb[i] = '\0';
+    
+    /* Encryption */
+    char encryptedMsg[M_PROTOCOL_SIZE + SN_SIZE];
+    encrypt(default_key, pb, encryptedMsg);
 
-    uBit.radio.datagram.send(pb);
+    PacketBuffer s(M_PROTOCOL_SIZE + SN_SIZE);
+    
+    for (i = 0; i < M_PROTOCOL_SIZE + SN_SIZE; i++) {
+        s[i] = encryptedMsg[i];
+            
+    } /* Copy in buffer */
+    
+    uBit.radio.datagram.send(s);
     
 } /* send_stop */
 
@@ -515,7 +558,7 @@ void send_ack(int cipher) {
 
     fiber_sleep(600);
 
-    PacketBuffer pb(M_PROTOCOL_SIZE + SN_SIZE + KEY_SIZE);
+    char pb[M_PROTOCOL_SIZE + SN_SIZE + KEY_SIZE];
     
     pb[0] = '#';
     
@@ -562,7 +605,18 @@ void send_ack(int cipher) {
     /* Add end line */
     pb[i] = '\0';
     
-    uBit.radio.datagram.send(pb);
+    /* Encryption */
+    char encryptedMsg[M_PROTOCOL_SIZE + SN_SIZE + KEY_SIZE];
+    encrypt(default_key, pb, encryptedMsg);
+    
+    PacketBuffer s(M_PROTOCOL_SIZE + SN_SIZE + KEY_SIZE);
+    
+    for (i = 0; i < M_PROTOCOL_SIZE + SN_SIZE + KEY_SIZE; i++) {
+        s[i] = encryptedMsg[i];
+            
+    } /* Copy in buffer */
+    
+    uBit.radio.datagram.send(s);
 
     send_acquittement = 1;
 
@@ -570,7 +624,7 @@ void send_ack(int cipher) {
 
 void send_incident(char *str_icd, int dest) {
     /* Send incident */
-    PacketBuffer pb(M_PROTOCOL_SIZE + STR_SIZE);
+    char pb[M_PROTOCOL_SIZE + STR_SIZE];
         
     int i = 0,
         j = 0;
@@ -605,8 +659,19 @@ void send_incident(char *str_icd, int dest) {
 
     /* Add end line */
     pb[i] = '\0';
+    
+    /* Encryption */
+    char encryptedMsg[M_PROTOCOL_SIZE + STR_SIZE];
+    encrypt(key, pb, encryptedMsg);
+    
+    PacketBuffer s(M_PROTOCOL_SIZE + STR_SIZE);
+    
+    for (i = 0; i < M_PROTOCOL_SIZE + STR_SIZE; i++) {
+        s[i] = encryptedMsg[i];
+            
+    } /* Copy in buffer */
 
-    uBit.radio.datagram.send(pb);
+    uBit.radio.datagram.send(s);
     
 } /* send_incident */
 

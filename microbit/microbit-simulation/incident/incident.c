@@ -50,7 +50,7 @@ incident *create_object_incident_from_string(
     const char *str
 ) {
     char delim[] = ";:";
-    char *token = strtok(str, delim);
+    char *token = strtok((char *)str, delim);
 
     int x = 0, 
         y = 0, 
