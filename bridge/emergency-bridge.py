@@ -11,6 +11,7 @@ import threading
 import time
 import json
 import paho.mqtt.client as paho
+import requests
 
 LAST_VALUE      = b"TL" #derniere valeur remontée par le microbit (initialisée a TL arbitrairement) elle prend des valeurs json type : {t: 28, l: 0, o: "TL"}
 LAST_CLIENT_ADDRESS = "" #adresse du dernier client android avec qui le serveur a communiqué
@@ -56,6 +57,18 @@ def sendUARTMessage(msg):
     display = str(msg, 'UTF-8')
     print("Message <" + display + "> sent to micro-controller." ) #retour visuel dans la console du serveur
 
+def parseData(data):
+    data = data.rstrip()
+    if data[len(data)-1] != "#":
+        print("Caractère de fin de chaine manquant.")
+        return None
+    else:
+        data = data.replace("#", "")
+        parsedValues = {}
+        for item in data.split(";"):
+            current = item.split(':')
+            parsedValues[current[0]] = current[1]
+        return parsedValues
 
 # Main program logic follows:
 if __name__ == '__main__':
@@ -77,6 +90,10 @@ if __name__ == '__main__':
                                         client1.connect(broker,port)
                                         ret= client1.publish("iot/incident/fire", data_str)        
                                         #collection.insert_one(json.loads(data_str)) # on les sauvegarde en bdd
+                                        jsonData = parseData(data_str)
+                                        print(jsonData)
+                                        response = requests.post("http://emergency-api.local/api/fire/new", data = json.dumps(jsonData))
+                                        print(response)
                                         print(data_str)
         except (KeyboardInterrupt, SystemExit): # en cas de ctrl+c on close tout et on quitte
                 ser.close()
