@@ -225,12 +225,37 @@ void delete_incidents(
  * @params
  * icd : Object to transform to string : incident *
  * str : String which contain the result : char * of size STR_SIZE
+ * end : 1 to add \n at the end and 0 to add nothing
  */
 void to_string_incident(
     incident *icd,
-    char *str
+    char *str,
+    int end
 ) {
-    sprintf(str, "x:%.2f;y:%.2f;v:%.2f#", icd->latitude, icd->longitude, icd->intensity);
+    char buffer[PRE_LAT_LONG];
+
+    sprintf(str, "x:");
+
+    /* Latitude to string */
+    gcvt(icd->latitude, PRE_LAT_LONG, buffer);
+    strcat(str, buffer);
+
+    strcat(str, ";y:");
+
+    /* Longitude to string */
+    gcvt(icd->longitude, PRE_LAT_LONG, buffer);
+    strcat(str, buffer);
+    
+    strcat(str, ";v:");
+
+    /* Intensity to string */
+    gcvt(icd->intensity, PRE_INT, buffer);
+    strcat(str, buffer);
+    
+    strcat(str, "#");
+
+    if (end == 1)
+        strcat(str, "\n");
 
 } /* to_string_incident */
 
@@ -263,7 +288,7 @@ void to_string_incidents(
             } else {
                 /* Concate string */
                 char str_temp[STR_SIZE];
-                to_string_incident(icd, str_temp);
+                to_string_incident(icd, str_temp, 0);
                 strcat(str, str_temp);
 
             }

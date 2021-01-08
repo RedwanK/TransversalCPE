@@ -67,7 +67,7 @@ int main(
     printf("Intensity : %.2f\n", icd->intensity);
 
     char str[STR_SIZE];
-    to_string_incident(icd, str);
+    to_string_incident(icd, str, 0);
     printf("%s\n", str);
     
     /* Test values */
@@ -75,7 +75,7 @@ int main(
     assert(icd->latitude == latitude);
     assert(icd->intensity == intensity);
     /* Test to string */
-    assert(strcmp("x:10.20;y:15.50;v:9.90#", str) == 0);
+    assert(strcmp("x:10.2;y:15.5;v:9.9#", str) == 0);
     
     /* Delete the object */
     printf("Delete the object\n");

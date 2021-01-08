@@ -7,6 +7,12 @@
 /* Size of an array of incidents */
 #define STR_SIZE 30
 
+/* Precision lat/long */
+#define PRE_LAT_LONG 6
+
+/* Precision int */
+#define PRE_INT 4
+
 /* Object for create a incident */
 typedef struct {
     float longitude;
@@ -82,7 +88,8 @@ void delete_incidents(
  */
 void to_string_incident(
     incident *icd,
-    char *str
+    char *str,
+    int end
 );
 
 /* @brief
