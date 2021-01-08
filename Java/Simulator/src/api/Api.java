@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class Api {
 
-    protected String baseURL = "localhost";
+    protected String baseURL = "http://localhost";
     protected HashMap<String, String> headers = new HashMap<String, String>(){{
         put("Accept", "*/*");
         put("Accept-Encoding", "gzip, deflate, br");
@@ -37,10 +37,6 @@ public class Api {
             con.setRequestMethod(method);
 
             this.manageHeaders(con);
-
-//            con.setRequestProperty("Accept", "*/*");
-//            con.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
-//            con.setRequestProperty("Connection", "keep-alive");
 
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(con.getInputStream())

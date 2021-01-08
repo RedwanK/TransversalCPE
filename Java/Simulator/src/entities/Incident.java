@@ -16,7 +16,7 @@ public class Incident {
         this.id = id;
     }
 
-    public Incident(int id, float latitude, float longitude, int cityId, int intensity, Date updatedAt) {
+    public Incident(int id, float latitude, float longitude, int cityId, float intensity, Date updatedAt) {
         this.id = id;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -71,5 +71,12 @@ public class Incident {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "Incident "+this.id+ " - \n" +
+                "\tVille : "+ this.cityId + "\n" +
+                "\tIntensité : "+this.intensity + "\n";
     }
 }
