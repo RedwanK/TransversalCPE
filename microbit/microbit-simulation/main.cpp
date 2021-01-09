@@ -115,7 +115,7 @@ void readSerial() {
         
         if (icd && connected == 1) {
             char str_icd[STR_SIZE];
-            to_string_incident(icd, str_icd);
+            to_string_incident(icd, str_icd, 0);
             
             /* Send incidents in radio */
             send_incident(str_icd, 0);

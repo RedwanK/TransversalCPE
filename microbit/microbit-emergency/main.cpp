@@ -13,7 +13,6 @@ extern "C" {
 #define M_PROTOCOL_SIZE 7
 const char m_protocol_separator = ':';
 const char p_protocol_separator = ';';
-const char d_protocol_first = '#';
 const char init[] = "INIT";
 const char ack[] = "ACK";
 const char stop[] = "STOP";
@@ -33,9 +32,6 @@ char serial_number[SN_SIZE] = "1";
 char key[KEY_SIZE];
 char connected_address[NUMBER_SN][SN_SIZE];
 int connected_number = 0;
-char e_protocol_first;
-char e_trusted_address[NUMBER_SN][SN_SIZE];
-char e_connected_address[NUMBER_SN][SN_SIZE];
 
 MicroBit uBit;
 
@@ -409,11 +405,11 @@ void receive_protocol() {
 
             if (icd) {
                 char str[STR_SIZE];
-                to_string_incident(icd, str);
+                to_string_incident(icd, str, 1);
 
                 /* Send to serial */
                 serial.send(str);
-                display.scroll(str);
+                //display.scroll(str);
 
             } /* Incident not NULL */
         }
