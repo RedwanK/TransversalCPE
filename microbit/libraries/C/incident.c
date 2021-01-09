@@ -232,24 +232,24 @@ void to_string_incident(
     char *str,
     int end
 ) {
-    char buffer[PRE_LAT_LONG];
+    char buffer[PRE_LAT_LONG + 4];
 
     sprintf(str, "x:");
 
     /* Latitude to string */
-    gcvt(icd->latitude, PRE_LAT_LONG, buffer);
+    ftoa(icd->latitude, buffer, PRE_LAT_LONG);
     strcat(str, buffer);
 
     strcat(str, ";y:");
 
     /* Longitude to string */
-    gcvt(icd->longitude, PRE_LAT_LONG, buffer);
+    ftoa(icd->longitude, buffer, PRE_LAT_LONG);
     strcat(str, buffer);
     
     strcat(str, ";v:");
 
     /* Intensity to string */
-    gcvt(icd->intensity, PRE_INT, buffer);
+    ftoa(icd->intensity, buffer, PRE_INT);
     strcat(str, buffer);
     
     strcat(str, "#");
