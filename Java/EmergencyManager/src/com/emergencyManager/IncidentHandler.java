@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+
+import entities.Team;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -15,7 +17,9 @@ import org.json.simple.parser.ParseException;
 public class IncidentHandler {
 
     private static volatile String jsonStringInci = "";
-    private static volatile ReentrantLock lock = new ReentrantLock();
+    private static volatile String jsonStringTeam = "";
+    private static volatile ReentrantLock lockInci = new ReentrantLock();
+    private static volatile ReentrantLock lockTeam = new ReentrantLock();
 
     private Thread thread1 = new Thread() {
         @Override
@@ -23,15 +27,26 @@ public class IncidentHandler {
             super.run();
             while (!interrupted()) {
                 System.out.println("threading");
-                lock.lock();
+                Api api = new Api("http://localhost");
+                lockInci.lock();
                 try {
-                    Api api = new Api("http://localhost");
-                    jsonStringInci = api.makeRequest("GET", "/api/incidents/list");
+                    System.out.println("requesting");
+                    jsonStringInci = api.makeRequest("GET", "/api/incident/list");
+                    jsonStringTeam = api.makeRequest("GET", "/api/team/list");
                     TimeUnit.SECONDS.sleep(5);
                 } catch (InterruptedException e) {
                     return;
                 } finally {
-                    lock.unlock();
+                    lockInci.unlock();
+                }
+                lockTeam.lock();
+                try {
+                    jsonStringTeam = api.makeRequest("GET", "/api/team/list");
+                    TimeUnit.SECONDS.sleep(5);
+                } catch (InterruptedException e) {
+                    return;
+                } finally {
+                    lockTeam.unlock();
                 }
             }
         }
@@ -51,22 +66,66 @@ public class IncidentHandler {
         JSONParser pars = new JSONParser();
         ArrayList<Incident> latests = new ArrayList<>();
         JSONArray jarry = new JSONArray();
-        lock.lock();
+        lockInci.lock();
         try {
             jarry = (JSONArray) pars.parse(jsonStringInci);
             int i = 0;
             while (i < jarry.size()) {
                 JSONObject o = (JSONObject) jarry.get(i);
-                JSONObject ocity = (JSONObject) o.get("city");
-                Incident latest = new Incident((int) (long) o.get("id"), (float) (double) o.get("latitude"), (float) (double) o.get("longitude"), (int) (long) ocity.get("id"), (float) (double) o.get("intensity"), (Date) o.get("updatedAt"));
+                JSONObject oloc = (JSONObject) o.get("location");
+                JSONObject ocity = (JSONObject) oloc.get("city");
+                Incident latest = new Incident((int) (long) o.get("id"), (float) (double) oloc.get("latitude"), (float) (double) oloc.get("longitude"), (int) (long) ocity.get("id"), (float) (double) o.get("intensity"), (Date) o.get("updatedAt"));
                 latests.add(latest);
                 i++;
             }
         } catch (ParseException e) {
-            lock.unlock();
+            lockInci.unlock();
             return latests;
         } finally{
-            lock.unlock();
+            lockInci.unlock();
+        }
+        return latests;
+    }
+
+    public ArrayList<Team> latestTeams(){
+        JSONParser pars = new JSONParser();
+        ArrayList<Team> latests = new ArrayList<>();
+        JSONArray jarry = new JSONArray();
+        lockTeam.lock();
+        try {
+            jarry = (JSONArray) pars.parse(jsonStringTeam);
+            int i = 0;
+            while (i < jarry.size()) {
+                JSONObject o = (JSONObject) jarry.get(i);
+                JSONArray oagents = (JSONArray) o.get("agents");
+                JSONArray ovehicles = (JSONArray) o.get("vehicles");
+                float coeffSum = 0;
+                ArrayList agid = new ArrayList();
+                ArrayList veid = new ArrayList();
+                //JSONObject ojob = (JSONObject) oagents.get("job");
+                //JSONObject ocatveh = (JSONObject) ovehicles.get("category_vehicle");
+
+                int j = 0;
+                while(j < oagents.size()){
+                    JSONObject oagent = (JSONObject) oagents.get(i);
+                    coeffSum += (float)(long)((JSONObject)oagent.get("job")).get("coefficient");
+                    j++;
+                }
+                int k = 0;
+                while(k< ovehicles.size()){
+                    JSONObject ovehicle = (JSONObject) ovehicles.get(i);
+                    coeffSum += (float)(long)((JSONObject)ovehicle.get("category_vehicle")).get("coefficient");
+                    k++;
+                }
+                //Team latest = new Team((int)(double)o.get("id"), (String)o.get("name"));
+                //latests.add(latest);
+                i++;
+            }
+        } catch (ParseException e) {
+            lockTeam.unlock();
+            return latests;
+        } finally{
+            lockTeam.unlock();
             return latests;
         }
     }
