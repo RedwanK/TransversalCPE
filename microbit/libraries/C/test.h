@@ -2,5 +2,6 @@
 #define __TEST_H__
 
 #include "incident.h"
+#include "cipher.h"
 
 #endif

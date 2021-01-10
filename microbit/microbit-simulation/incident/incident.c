@@ -47,10 +47,10 @@ incident *create_object_incident(
  * A new incident allocate in memory or NULL in error case.
  */
 incident *create_object_incident_from_string(
-    char *str
+    const char *str
 ) {
     char delim[] = ";:";
-    char *token = strtok(str, delim);
+    char *token = strtok((char *)str, delim);
 
     int x = 0, 
         y = 0, 
@@ -67,19 +67,19 @@ incident *create_object_incident_from_string(
             v = 1;
         else {
             if (x == 1) {
-                float latitude = atof(token);;
+                float latitude = atof(token);
 
                 icd->latitude = latitude;
                 x = 0;
 
             } else if (y == 1) {
-                float longitude = atof(token);;
+                float longitude = atof(token);
 
                 icd->longitude = longitude;
                 y = 0;
 
             } else if (v == 1) {
-                float intensity = atof(token);;
+                float intensity = atof(token);
 
                 icd->intensity = intensity;
                 v = 0;
@@ -149,7 +149,7 @@ incidents *new_incidents() {
  */
 int add_incident_from_string(
     incidents *icds,
-    char *str
+    const char *str
 ) {
     /* Check no icds */
     if (!icds)
@@ -225,12 +225,37 @@ void delete_incidents(
  * @params
  * icd : Object to transform to string : incident *
  * str : String which contain the result : char * of size STR_SIZE
+ * end : 1 to add \n at the end and 0 to add nothing
  */
 void to_string_incident(
     incident *icd,
-    char *str
+    char *str,
+    int end
 ) {
-    sprintf(str, "x:%.2f;y:%.2f;v:%.2f#", icd->latitude, icd->longitude, icd->intensity);
+    char buffer[PRE_LAT_LONG + 4];
+
+    sprintf(str, "x:");
+
+    /* Latitude to string */
+    ftoa(icd->latitude, buffer, PRE_LAT_LONG);
+    strcat(str, buffer);
+
+    strcat(str, ";y:");
+
+    /* Longitude to string */
+    ftoa(icd->longitude, buffer, PRE_LAT_LONG);
+    strcat(str, buffer);
+    
+    strcat(str, ";v:");
+
+    /* Intensity to string */
+    ftoa(icd->intensity, buffer, PRE_INT);
+    strcat(str, buffer);
+    
+    strcat(str, "#");
+
+    if (end == 1)
+        strcat(str, "\n");
 
 } /* to_string_incident */
 
@@ -263,7 +288,7 @@ void to_string_incidents(
             } else {
                 /* Concate string */
                 char str_temp[STR_SIZE];
-                to_string_incident(icd, str_temp);
+                to_string_incident(icd, str_temp, 0);
                 strcat(str, str_temp);
 
             }

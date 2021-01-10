@@ -1,11 +1,19 @@
 #ifndef __INCIDENT_H__
 #define __INCIDENT_H__
 
+#include "convert.h"
+
 /* Size of an array of incidents */
 #define DATA_SIZE 10 // Cant save 60 -> micro:bit memory error
 
 /* Size of an array of incidents */
 #define STR_SIZE 30
+
+/* Precision lat/long */
+#define PRE_LAT_LONG 4
+
+/* Precision int */
+#define PRE_INT 2
 
 /* Object for create a incident */
 typedef struct {
@@ -38,7 +46,7 @@ incident *create_object_incident(
  * : : delimiter between the name (x, y or v) and the value
  */
 incident *create_object_incident_from_string(
-    char *str
+    const char *str
 );
 
 /* @brief
@@ -59,7 +67,7 @@ incidents *new_incidents();
  */
 int add_incident_from_string(
     incidents *icds,
-    char *str
+    const char *str
 );
 
 /* @brief
@@ -82,7 +90,8 @@ void delete_incidents(
  */
 void to_string_incident(
     incident *icd,
-    char *str
+    char *str,
+    int end
 );
 
 /* @brief

@@ -1,6 +1,6 @@
 CC ?= gcc
 
-TOBJS ?= test.o incident.o
+TOBJS ?= test.o convert.o incident.o cipher.o
 
 .SUFFIXES: .c .o
 
