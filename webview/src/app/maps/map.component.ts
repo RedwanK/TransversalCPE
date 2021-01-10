@@ -106,13 +106,13 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   protected __renderMap(): void {
     // Create Leaflet Map in fixed DIV - zoom level is hardcoded for simplicity
     this.map = L.map(this.mapDiv, {
-      zoomControl: false,
+      zoomControl: true,
       zoomAnimation: false,
       trackResize: true,
       boxZoom: true,
     }).setView([this._initCoords.lat, this._initCoords.long], 10);
 
-    this.baseLayer = esri.basemapLayer('Gray');
+    this.baseLayer = esri.basemapLayer('Topographic');
     this.map.addLayer(this.baseLayer);
   }
 

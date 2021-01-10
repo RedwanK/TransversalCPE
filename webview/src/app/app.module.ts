@@ -3,15 +3,13 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { MapComponent } from './maps/map.component';
-import { MapControlComponent } from './maps/map-control/map-control.component';
 
 import { INIT_COORDS } from './tokens';
 
 @NgModule({
   declarations: [
     AppComponent,
-    MapComponent,
-    MapControlComponent
+    MapComponent
   ],
   imports: [
     BrowserModule
