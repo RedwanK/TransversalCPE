@@ -1,6 +1,6 @@
 # Micro:bit
 
-Documentation que nous avons utilisé pour codé en C++ : 
+Documentation que nous avons utilisé pour coder en C++ : 
 * https://lancaster-university.github.io/microbit-docs/
 
 ## 1. drivers
