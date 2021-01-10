@@ -1,5 +1,8 @@
 # Micro:bit
 
+Documentation que nous avons utilisé pour codé en C++ : 
+* https://lancaster-university.github.io/microbit-docs/
+
 ## 1. drivers
 
 Dossier contenant les drivers pour micro:bit à installer pour Windows.
