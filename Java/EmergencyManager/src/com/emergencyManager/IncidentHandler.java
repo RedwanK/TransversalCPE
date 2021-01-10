@@ -108,25 +108,26 @@ public class IncidentHandler {
                 int j = 0;
                 while(j < oagents.size()){
                     JSONObject oagent = (JSONObject) oagents.get(i);
-                    coeffSum += (float)(long)((JSONObject)oagent.get("job")).get("coefficient");
+                    coeffSum += (float)(double)((JSONObject)oagent.get("job")).get("coefficient");
                     j++;
                 }
                 int k = 0;
                 while(k< ovehicles.size()){
-                    JSONObject ovehicle = (JSONObject) ovehicles.get(i);
-                    coeffSum += (float)(long)((JSONObject)ovehicle.get("category_vehicle")).get("coefficient");
+                    JSONObject ovehicle = (JSONObject) ovehicles.get(k);
+                    coeffSum += (float)(double)((JSONObject)ovehicle.get("category_vehicle")).get("coefficient");
                     k++;
                 }
-                //Team latest = new Team((int)(double)o.get("id"), (String)o.get("name"));
-                //latests.add(latest);
+                Team latest = new Team((int)(long)o.get("id"), (String)o.get("name"), coeffSum);
+                latests.add(latest);
                 i++;
+                System.out.println(coeffSum);
             }
         } catch (ParseException e) {
             lockTeam.unlock();
             return latests;
         } finally{
             lockTeam.unlock();
-            return latests;
         }
+        return latests;
     }
 }

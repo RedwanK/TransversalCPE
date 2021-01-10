@@ -6,19 +6,15 @@ public class Team {
 
     private int id;
     private String name;
-    private ArrayList agentsId;
-    private ArrayList vehiclesId;
     private float coeff;
 
     public Team(){}
 
     public Team(int id){ this.id = id; }
 
-    public Team(int id, String name, ArrayList agentsId, ArrayList vehiclesId, int coeff){
+    public Team(int id, String name, float coeff){
         this.id = id;
         this.name = name;
-        this.agentsId = agentsId;
-        this.vehiclesId = vehiclesId;
         this.coeff = coeff;
     }
 
@@ -28,14 +24,6 @@ public class Team {
 
     public String getName() {
         return name;
-    }
-
-    public ArrayList getAgentsId() {
-        return agentsId;
-    }
-
-    public ArrayList getVehiclesId() {
-        return vehiclesId;
     }
 
     public float getCoeff() {
@@ -48,14 +36,6 @@ public class Team {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setAgentsId(ArrayList agentsId) {
-        this.agentsId = agentsId;
-    }
-
-    public void setVehiclesId(ArrayList vehiclesId) {
-        this.vehiclesId = vehiclesId;
     }
 
     public void setCoeff(float coeff) {
