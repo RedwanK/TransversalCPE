@@ -510,8 +510,6 @@ void initialise() {
     uBit.init();
     /* Initialise the serial bauderate */
     serial.baud(115200);
-    /* Initialise the heap allocator */
-    //microbit_create_heap(MICROBIT_SD_GATT_TABLE_START + MICROBIT_SD_GATT_TABLE_SIZE, MICROBIT_SD_LIMIT);
     /* Initialise the radio */
     scheduler_init(bus);
     //bus.listen(MICROBIT_ID_RADIO, MICROBIT_RADIO_EVT_DATAGRAM, receive_protocol);

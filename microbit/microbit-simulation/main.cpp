@@ -82,8 +82,7 @@ int main()
     create_fiber(network_protocol);
 
     /* Create fiber for serial and schedule it */
-    /* The fiber is created when read until a value */
-    readSerial();
+    create_fiber(readSerial);
     
     release_fiber();
     
@@ -93,38 +92,84 @@ int main()
  * Read values from serial.
  * When there are values, add the values to the string
  * until there isn't a #. Then, create a incident object.
+ *
+ * first : Indicate if we are in the first case, 0 yes, 1 no
+ * i : Indicate where we are in the string
+ * str : String who contain the values from serial for one incident
  */
 void readSerial() {
-    int length;
+    int first = 0,
+        i = 0;
     
+    char str[STR_SIZE];
+
     incident *icd = NULL;
 
     while(1){
         /* Read serial */
-        ManagedString r = serial.readUntil("#");
-        
-        length = r.length();
-        
-        /* Check length */
-        if (length >= STR_SIZE)
-            continue;
-        
-        const char *str = r.toCharArray();
-        
-        icd = create_object_incident_from_string(str);
-        
-        if (icd && connected == 1) {
-            char str_icd[STR_SIZE];
-            to_string_incident(icd, str_icd, 0);
+        int v = serial.read(ASYNC);
+        if (v != MICROBIT_NO_DATA){
+            char c = (char)v;
             
-            /* Send incidents in radio */
-            send_incident(str_icd, 0);
+            if (first == 0) {
+                if (c != 'x')
+                    continue;
+                
+                first = 1;    
+            }
+            if (c != '#') {
+                if (i < STR_SIZE) {
+                    /* Check we dont exceed the string */
+                    str[i] = c;
+                    
+                } else {
+                    str[STR_SIZE - 1] = '\0';
+                }
 
-            /* Delete incident */
-            delete_incident(icd);
-            
-        } /* Incident not NULL */
+                i++;
+
+            } else {
+                if (i < STR_SIZE) {
+                    /* Check we dont exceed the string */
+                    str[i] = '\0';
+
+                } else {
+                    str[STR_SIZE - 1] = '\0';
+
+                }
+
+                first = 0;
+                i = 0;
+                /* Create incident object from string */
+                icd = create_object_incident_from_string(str);
         
+                if (icd && connected == 1) {
+                    char str_icd[STR_SIZE];
+                    to_string_incident(icd, str_icd, 0);
+
+                    /* Send incidents in radio */
+                    send_incident(str_icd, 0);
+
+                    /* Delete incident */
+                    delete_incident(icd);
+                    icd = NULL;
+                    
+                } /* Incident not NULL */
+
+                /* Empty str */
+                str[0] = '\0';
+
+            }
+            
+        } else {
+            first = 0;
+            i = 0;
+            icd = NULL;
+
+        }
+
+        fiber_sleep(50);
+
     }
 
 } /* readSerial */
@@ -451,8 +496,7 @@ void initialise() {
     uBit.init();
     /* Initialise the serial bauderate */
     serial.baud(115200);
-    /* Initialise the heap allocator */
-    //microbit_create_heap(MICROBIT_SD_GATT_TABLE_START + MICROBIT_SD_GATT_TABLE_SIZE, MICROBIT_SD_LIMIT);
+    serial.setRxBufferSize(STR_SIZE);
     /* Initialise the radio */
     scheduler_init(bus);
     //bus.listen(MICROBIT_ID_RADIO, MICROBIT_RADIO_EVT_DATAGRAM, receive_protocol);
@@ -625,6 +669,8 @@ void send_ack(int cipher) {
 void send_incident(char *str_icd, int dest) {
     /* Send incident */
     char pb[M_PROTOCOL_SIZE + STR_SIZE];
+
+    fiber_sleep(600);
         
     int i = 0,
         j = 0;
