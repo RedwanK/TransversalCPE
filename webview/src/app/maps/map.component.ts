@@ -12,8 +12,6 @@ import {
 
 import { getCurrentOffset } from './libs/map-libs';
 
-import { MapIconOptions } from './data/map-icon-options';
-
 import { EventHandler } from './interfaces/event-handler';
 import { INIT_COORDS } from '../tokens';
 
@@ -21,6 +19,11 @@ import * as esri from 'esri-leaflet';
 import * as L from 'leaflet';
 import { LocationService } from './services/location.service';
 import { Marker } from './interfaces/marker.interface';
+import { interval, Subject, Subscription } from 'rxjs';
+import { DataService } from './services/data.service';
+import { Incident } from './interfaces/incident.interface';
+import { takeUntil } from 'rxjs/operators';
+import { ApiService } from './services/api.service';
 
 /**
  * Leaflet Map Component
@@ -31,13 +34,12 @@ import { Marker } from './interfaces/marker.interface';
   templateUrl: './map.component.html',
 
   styleUrls: ['./map.component.scss'],
+
+  providers: [DataService]
 })
 export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public mcText: string;                         // mouse coords text (innerHTML)
-
-  @Input()
-  public markers: Marker[]; // Markers to overlay on Map
 
   public currentWidth: number;                   // current map width based on window width
   public currentHeight: number;                  // current map height based on window height
@@ -46,7 +48,10 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   protected map: any;                            // Map reference (currently leaflet)
   protected mapLoaded = false;                   // True if the map has been loaded
 
-  private ls: LocationService;
+  // Destroy pending request when leave 
+  protected destroy$: Subject<boolean> = new Subject<boolean>(); 
+
+  protected incidents: Incident[];
 
   // The primary Map
   @ViewChild('primaryMap', { static: true }) protected mapDivRef: ElementRef;
@@ -56,7 +61,14 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   protected onClickHandler: EventHandler;
   protected onMouseMoveHandler: EventHandler;
 
-  constructor(@Inject(INIT_COORDS) protected _initCoords: { lat: number, long: number }, ls: LocationService) {
+  protected subscription: Subscription;
+  
+  constructor(
+    @Inject(INIT_COORDS) protected _initCoords: { lat: number, long: number }, 
+    private locationService: LocationService,
+    private dataService: DataService,
+    private apiService: ApiService
+  ) {
     this.baseLayer = null;
 
     // Leaflet Map Event Handlers
@@ -70,7 +82,6 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.currentWidth = 600;
     this.currentHeight = 200;
 
-    this.ls = ls;
   }
 
   public ngOnInit(): void {
@@ -79,13 +90,26 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.__initializeMap();
     this.__renderMap();
-    this.__showMarkers();
+
+    // Subscribe to api
+    const source = interval(10000);
+    this.subscription = source.subscribe(val => this.__updateFromApi());
 
     // Get current location
-    this.ls.getPosition().then(pos=>
+    this.locationService.getPosition().then(pos=>
     {
       this._initCoords.lat = pos.lat;
       this._initCoords.long = pos.lng;
+
+      let m: Marker = { 
+        id: 1, 
+        lat: pos.lat, 
+        long: pos.lng,
+        type: 'location',
+        popup: 'Vous êtes ici en somme.'
+      };
+
+      this.apiService.__addMarker(this.map, m);
       this.map.setView([this._initCoords.lat, this._initCoords.long], 10);
     });
   }
@@ -99,6 +123,11 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   public ngOnDestroy(): void {
     this.map.off('click', this.onClickHandler);
     this.map.off('mousemove', this.onMouseMoveHandler);
+
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
+
+    this.subscription.unsubscribe();
   }
 
   /**
@@ -131,39 +160,18 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Show markers if they are defined
+   * Update from API
    */
-  protected __showMarkers(): void {
-    if (this.markers !== undefined && this.markers != null && this.markers.length > 0) {
-      // Add markers
-      const icon = L.icon({
-        iconUrl: MapIconOptions.mapIcon["fire"],
-        iconSize: MapIconOptions.iconSize,
-        iconAnchor: MapIconOptions.iconAnchor,
-        popupAnchor: MapIconOptions.popupAnchor,
-      });
+  protected __updateFromApi(): void {
+    /* Get incidents */
+    this.dataService.PAGE = '/incidents/unresolved/list';
+    this.dataService.sendGetRequest().pipe(takeUntil(this.destroy$)).subscribe((data: any[]) => {
+      this.incidents = data as Incident[];
 
-      const n: number = this.markers.length;
-      let i: number;
-      let m: L.marker;
+      // Update incidents markers
+      this.apiService.__updateIncidents(this.map, this.incidents)
 
-      let x: number;
-      let y: number;
-
-      for (i = 0; i < n; ++i) {
-
-        x = this.markers[i].lat;
-        y = this.markers[i].long;
-
-        if (x !== undefined && !isNaN(x) && y !== undefined && !isNaN(y)) {
-          // okay to add the icon
-          m = L.marker([x, y], { icon: icon }).bindPopup('Vous êtes ici en somme').addTo(this.map);
-        }
-        else {
-          console.log('MARKER ERROR, Marker number: ', (i + 1), 'x: ', x, ' y: ', y);
-        }
-      }
-    }
+    });
   }
 
   @HostListener('window:resize', ['$event'])
@@ -179,7 +187,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   protected __updateMapSize(): void {
     // update width/height settings as you see fit
     this.currentWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    this.currentHeight = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight) - 200;
+    this.currentHeight = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight) - 150;
   }
 
   /**
@@ -197,7 +205,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const target: any = evt.originalEvent.target;
 
-    console.log('Map click on: ', target);
+    //console.log('Map click on: ', target);
   }
 
   /**

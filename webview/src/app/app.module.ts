@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { MapComponent } from './maps/map.component';
 
 import { INIT_COORDS } from './tokens';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -12,7 +13,8 @@ import { INIT_COORDS } from './tokens';
     MapComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    HttpClientModule
   ],
   providers: [{ provide: INIT_COORDS, useValue: { lat: 45.764043, long: 4.835659 } }], // Default Lyon
   bootstrap: [AppComponent]

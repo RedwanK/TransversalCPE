@@ -8,7 +8,7 @@ import { retry, catchError } from 'rxjs/operators';
 })
 export class DataService {
 
-  private REST_API_SERVER = "localhost";
+  private REST_API_SERVER = 'http://localhost/api';
 
   public PAGE = null;
 
