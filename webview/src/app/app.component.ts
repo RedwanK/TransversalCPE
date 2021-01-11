@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Marker } from './models/marker.interface';
 
 @Component({
   selector: 'app-root',
@@ -6,12 +7,12 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  public markers: { lat: number, long: number }[];   // Map markers (relevance depends on map center)
+  public markers: Marker[];   // Map markers (relevance depends on map center)
 
   constructor() {
     // some map markers
     this.markers = [
-      { lat: 45.764043, long: 4.835659 },
+      { id: 1, lat: 45.764043, long: 4.835659 },
     ];
   }
 }

@@ -20,6 +20,7 @@ import { INIT_COORDS } from '../tokens';
 import * as esri from 'esri-leaflet';
 import * as L from 'leaflet';
 import { LocationService } from './location/locationservice';
+import { Marker } from '../models/marker.interface';
 
 /**
  * Leaflet Map Component
@@ -36,7 +37,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   public mcText: string;                         // mouse coords text (innerHTML)
 
   @Input()
-  public markers: { lat: number, long: number }[]; // Markers to overlay on Map
+  public markers: Marker[]; // Markers to overlay on Map
 
   public currentWidth: number;                   // current map width based on window width
   public currentHeight: number;                  // current map height based on window height
@@ -158,10 +159,9 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
         if (x !== undefined && !isNaN(x) && y !== undefined && !isNaN(y)) {
           // okay to add the icon
-          m = L.marker([x, y], { icon: icon }).addTo(this.map);
+          m = L.marker([x, y], { icon: icon }).bindPopup('Vous êtes ici en somme').addTo(this.map);
         }
         else {
-          // implement your own error handling
           console.log('MARKER ERROR, Marker number: ', (i + 1), 'x: ', x, ' y: ', y);
         }
       }

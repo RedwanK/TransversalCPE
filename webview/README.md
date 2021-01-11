@@ -2,13 +2,7 @@
 
 ## Running the demo
 
-After loading, the map is rendered at the center coordinates injected into the application.  The zoom level is currently hardcoded along with some map marker coordinates.  Change as you see fit.
-
-To inject a new map center, alter the coordinates in _/src/app/app.module.ts_,
-
-```
-  providers: [{ provide: INIT_COORDS, useValue: {lat: 32.9756, long: -96.89} }],
-```
+After loading, the map is rendered at the center coordinates injected into the application.  The zoom level is currently hardcoded along with some map marker coordinates.
 
 ## Development server
 
