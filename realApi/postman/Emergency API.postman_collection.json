@@ -33,7 +33,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"coefficient\" : 1.2,\n    \"numberVehicles\": 1,\n    \"numberAgents\": 6,\n    \"incident\": 1\n}"
+							"raw": "{\n    \"coefficient\" : 1.2,\n    \"numberVehicles\": 1,\n    \"numberAgents\": 6,\n    \"incident\": 4,\n    \"team\": 3\n}"
 						},
 						"url": {
 							"raw": "{{ENV}}/intervention/create",
@@ -227,6 +227,25 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Unresolved incidents lists",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/incidents/unresolved/list",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"incidents",
+								"unresolved",
+								"list"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -335,6 +354,25 @@
 							],
 							"path": [
 								"team",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List unresolved teams",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/team/unresolved/list",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"team",
+								"unresolved",
 								"list"
 							]
 						}
