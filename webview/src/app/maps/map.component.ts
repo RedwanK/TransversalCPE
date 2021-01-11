@@ -20,7 +20,7 @@ import { INIT_COORDS } from '../tokens';
 import * as esri from 'esri-leaflet';
 import * as L from 'leaflet';
 import { LocationService } from './location/locationservice';
-import { Marker } from '../models/marker.interface';
+import { Marker } from './interfaces/marker.interface';
 
 /**
  * Leaflet Map Component
@@ -126,7 +126,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       boxZoom: true,
     }).setView([this._initCoords.lat, this._initCoords.long], 10);
 
-    this.baseLayer = esri.basemapLayer('Topographic');
+    this.baseLayer = esri.basemapLayer('DarkGray');
     this.map.addLayer(this.baseLayer);
   }
 
@@ -137,12 +137,10 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.markers !== undefined && this.markers != null && this.markers.length > 0) {
       // Add markers
       const icon = L.icon({
-        iconUrl: MapIconOptions.mapIcon,
+        iconUrl: MapIconOptions.mapIcon["fire"],
         iconSize: MapIconOptions.iconSize,
         iconAnchor: MapIconOptions.iconAnchor,
-        shadowUrl: MapIconOptions.mapShadowIcon,
-        shadowSize: MapIconOptions.shadowSize,
-        shadowAnchor: MapIconOptions.shadowAnchor,
+        popupAnchor: MapIconOptions.popupAnchor,
       });
 
       const n: number = this.markers.length;

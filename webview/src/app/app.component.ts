@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Marker } from './models/marker.interface';
+import { Marker } from './maps/interfaces/marker.interface';
 
 @Component({
   selector: 'app-root',
