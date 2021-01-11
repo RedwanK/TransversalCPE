@@ -53,4 +53,17 @@ class IncidentController extends AbstractFOSRestController
         $em->flush();
         return $this->handleView($this->view(['status' => 'ok'], Response::HTTP_CREATED));
     }
+
+    /**
+     * Lists all unresolved Incidents.
+     * @Rest\Get("/incidents/unresolved/list")
+     *
+     * @return Response
+     */
+    public function getUnresolvedIncidentAction()
+    {
+        $repository = $this->getDoctrine()->getRepository(Incident::class);
+        $incidents = $repository->findBy(['resolved_at' => null]);
+        return $this->handleView($this->view($incidents));
+    }
 }
