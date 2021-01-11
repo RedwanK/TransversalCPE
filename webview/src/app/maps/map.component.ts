@@ -19,6 +19,7 @@ import { INIT_COORDS } from '../tokens';
 
 import * as esri from 'esri-leaflet';
 import * as L from 'leaflet';
+import { LocationService } from './location/locationservice';
 
 /**
  * Leaflet Map Component
@@ -44,6 +45,8 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   protected map: any;                            // Map reference (currently leaflet)
   protected mapLoaded = false;                   // True if the map has been loaded
 
+  private ls: LocationService;
+
   // The primary Map
   @ViewChild('primaryMap', { static: true }) protected mapDivRef: ElementRef;
   protected mapDiv: HTMLDivElement;
@@ -52,7 +55,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   protected onClickHandler: EventHandler;
   protected onMouseMoveHandler: EventHandler;
 
-  constructor(@Inject(INIT_COORDS) protected _initCoords: { lat: number, long: number }) {
+  constructor(@Inject(INIT_COORDS) protected _initCoords: { lat: number, long: number }, ls: LocationService) {
     this.baseLayer = null;
 
     // Leaflet Map Event Handlers
@@ -65,6 +68,8 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     // some simple default values
     this.currentWidth = 600;
     this.currentHeight = 200;
+
+    this.ls = ls;
   }
 
   public ngOnInit(): void {
@@ -74,6 +79,14 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.__initializeMap();
     this.__renderMap();
     this.__showMarkers();
+
+    // Get current location
+    this.ls.getPosition().then(pos=>
+    {
+      this._initCoords.lat = pos.lat;
+      this._initCoords.long = pos.lng;
+      this.map.setView([this._initCoords.lat, this._initCoords.long], 10);
+    });
   }
 
   public ngAfterViewInit(): void {
