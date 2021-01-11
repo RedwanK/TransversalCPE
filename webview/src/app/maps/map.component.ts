@@ -19,7 +19,7 @@ import { INIT_COORDS } from '../tokens';
 
 import * as esri from 'esri-leaflet';
 import * as L from 'leaflet';
-import { LocationService } from './location/locationservice';
+import { LocationService } from './services/location.service';
 import { Marker } from './interfaces/marker.interface';
 
 /**
