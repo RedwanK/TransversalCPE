@@ -152,17 +152,29 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"type\" : \"fire\",\n    \"codeIncident\": \"x:45.7640;y:4.8357;v:7.9#\",\n    \"intensity\": 7.9,\n    \"location\": 1,\n    \"sensor\": 1\n}"
+							"raw": "{\n    \"intensity\": 4.3\n}"
 						},
 						"url": {
-							"raw": "{{ENV}}/incidents/create",
+							"raw": "{{ENV}}/incidents/8/update",
 							"host": [
 								"{{ENV}}"
 							],
 							"path": [
 								"incidents",
-								"create"
+								"8",
+								"update"
 							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get intervention from incident",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": ""
 						}
 					},
 					"response": []
