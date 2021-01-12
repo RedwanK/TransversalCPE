@@ -3,15 +3,17 @@
  */
 
 import { IconOptions } from '../interfaces/icon-options';
+import { MapTypeOptions } from './map-type-options';
 
 export const MapIconOptions: IconOptions =
 {
   mapIcon: {
-    location: './assets/maps/location.png',
-    fire: './assets/maps/fire.gif',
-    fireHuge: './assets/maps/fire-huge.gif',
-    fireSmall: './assets/maps/fire-small.gif',
-    fireTruck: './assets/maps/fire-truck.png'
+    location: MapTypeOptions.location,
+    fire: MapTypeOptions.fire,
+    fireHuge: MapTypeOptions.fireHuge,
+    fireSmall: MapTypeOptions.fireSmall,
+    fireTruck: MapTypeOptions.fireTruck,
+    sensor: MapTypeOptions.sensor
   },
   iconSize: [38, 38],
   iconAnchor: [22, 37],

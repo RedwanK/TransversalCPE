@@ -1,8 +1,8 @@
-# WebView Leaflet Map Into Angular 8
+# WebView Similator Leaflet Map Into Angular 8
 
 ## Running the demo
 
-After loading, the map is rendered at the center coordinates injected into the application.  The zoom level is currently hardcoded along with some map marker coordinates.
+If you want's to change the pages and the environnement for the API, go the file : ```src/app/maps/data/map-page-options.ts```
 
 ## Development server
 

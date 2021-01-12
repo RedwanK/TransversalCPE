@@ -1,13 +1,9 @@
+import { TypeOptions } from "./type-options";
+
 export interface IconOptions
 {
   iconAnchor: number[],
   iconSize: number[],
-  mapIcon: {
-    location: string,
-    fire: string,
-    fireHuge: string,
-    fireSmall: string,
-    fireTruck: string
-  },
+  mapIcon: TypeOptions,
   popupAnchor: number[];
 }

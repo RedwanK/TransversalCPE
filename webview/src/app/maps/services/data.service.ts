@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { throwError } from 'rxjs';
 import { retry, catchError } from 'rxjs/operators';
+import { MapPageOptions } from '../data/map-page-options';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
 
-  private REST_API_SERVER = 'http://localhost/api';
+  private REST_API_SERVER = MapPageOptions.env;
 
   public PAGE = null;
 

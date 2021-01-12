@@ -25,6 +25,9 @@ import { Incident } from './interfaces/incident.interface';
 import { takeUntil } from 'rxjs/operators';
 import { ApiService } from './services/api.service';
 import { MapService } from './services/map.service';
+import { Intervention } from './interfaces/intervention.interface';
+import { Sensor } from './interfaces/sensor.interface';
+import { MapPageOptions } from './data/map-page-options';
 
 /**
  * Leaflet Map Component
@@ -52,7 +55,9 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   // Destroy pending request when leave 
   protected destroy$: Subject<boolean> = new Subject<boolean>(); 
 
+  protected interventions: Intervention[];
   protected incidents: Incident[];
+  protected sensors: Sensor[];
 
   // The primary Map
   @ViewChild('primaryMap', { static: true }) protected mapDivRef: ElementRef;
@@ -92,9 +97,10 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.__initializeMap();
     this.__renderMap();
+    this.__updateFromApi()
 
     // Subscribe to api
-    const source = interval(5000);
+    const source = interval(10000);
     this.subscription = source.subscribe(val => this.__updateFromApi());
 
     // Get current location
@@ -166,13 +172,33 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
    * Update from API
    */
   protected __updateFromApi(): void {
+    /* Get interventions */
+    this.dataService.PAGE = MapPageOptions.intervention;
+    this.dataService.sendGetRequest().pipe(takeUntil(this.destroy$)).subscribe((data: any[]) => {
+      this.interventions = data as Intervention[];
+
+      // Update interventions markers
+      this.apiService.__updateInterventions(this.map, this.interventions)
+
+    });
+
     /* Get incidents */
-    this.dataService.PAGE = '/incidents/unresolved/list';
+    this.dataService.PAGE = MapPageOptions.incident;
     this.dataService.sendGetRequest().pipe(takeUntil(this.destroy$)).subscribe((data: any[]) => {
       this.incidents = data as Incident[];
 
       // Update incidents markers
       this.apiService.__updateIncidents(this.map, this.incidents)
+
+    });
+
+    /* Get sensors */
+    this.dataService.PAGE = MapPageOptions.sensor;
+    this.dataService.sendGetRequest().pipe(takeUntil(this.destroy$)).subscribe((data: any[]) => {
+      this.sensors = data as Sensor[];
+
+      // Update interventions markers
+      this.apiService.__updateSensors(this.map, this.sensors)
 
     });
   }
