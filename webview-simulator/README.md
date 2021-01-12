@@ -2,6 +2,8 @@
 
 ## Running the demo
 
+Run `npm install`
+
 If you want's to change the pages and the environnement for the API, go the file : ```src/app/maps/data/map-page-options.ts```
 
 ## Development server
