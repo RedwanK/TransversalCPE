@@ -65,7 +65,7 @@ export class MapService {
         if (x !== undefined && !isNaN(x) && y !== undefined && !isNaN(y)) {
           
           // okay to add
-          m = L.marker([x, y], { icon: icon });
+          m = L.marker([x, y], { icon: icon, riseOnHover: true });
           if (marker.popup) {
             m.bindPopup(marker.popup);
           }
