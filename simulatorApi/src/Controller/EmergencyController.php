@@ -40,6 +40,9 @@ class EmergencyController extends AbstractFOSRestController
             if (!$incident) {
                 return $this->handleView($this->view(["error" => "unable to find corresponding incident"], Response::HTTP_BAD_REQUEST));
             }
+            if($doctrine->getRepository(Intervention::class)->findBy(['incident' => $incident])) {
+                continue;
+            }
             $interventionObj = new Intervention();
             $interventionObj->setIncident($incident);
             $interventionObj->setCoefficient($intervention->coefficient);
