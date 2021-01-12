@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 use App\Entity\City;
+use App\Entity\Intervention;
 use App\Form\CityType;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use GuzzleHttp\Client;
@@ -33,8 +34,21 @@ class EmergencyController extends AbstractFOSRestController
         }
 
         $interventions = json_decode($json);
+        $doctrine = $this->getDoctrine();
+        foreach($interventions as $intervention) {
+            $incident = $doctrine->getRepository(Incident::class)->findOneBy(["codeIncident" => $intervention->incident->code_incident, "resolved_at" => null]);
+            if (!$incident) {
+                return $this->handleView($this->view(["error" => "unable to find corresponding incident"], Response::HTTP_BAD_REQUEST));
+            }
+            $interventionObj = new Intervention();
+            $interventionObj->setIncident($incident);
+            $interventionObj->setCoefficient($intervention->coefficient);
+            $interventionObj->setNumberAgents($intervention->number_agents);
+            $interventionObj->setNumberVehicles($intervention->number_vehicles);
 
-        dump($interventions);die;
-        //return $this->handleView($this->view($cities));
+            $doctrine->getManager()->persist($interventionObj);
+        }
+        $doctrine->getManager()->flush();
+        return $this->handleView($this->view(['status' => "ok"], Response::HTTP_CREATED));
     }
 }
