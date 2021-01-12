@@ -1,28 +1,40 @@
 package entities;
 
-import java.util.Date;
-
 public class Incident {
     private int id;
+    private String type = "fire";
+    private String codeIncident;
     private float latitude;
     private float longitude;
-    private int cityId;
+    private int locationId;
     private float intensity;
-    private Date updatedAt;
+    private int sensorId;
+    private boolean resolved;
 
     public Incident() {}
 
     public Incident(int id) {
         this.id = id;
+        this.resolved = false;
     }
 
-    public Incident(int id, float latitude, float longitude, int cityId, float intensity, Date updatedAt) {
+    /**
+     *
+     * @param id
+     * @param type
+     * @param codeIncident
+     * @param locationId
+     * @param sensorId
+     * @param intensity
+     */
+    public Incident(int id, String type, String codeIncident, int locationId, int sensorId, float intensity) {
         this.id = id;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.cityId = cityId;
+        this.type = type;
+        this.locationId = locationId;
         this.intensity = intensity;
-        this.updatedAt = updatedAt;
+        this.sensorId = sensorId;
+        this.codeIncident = codeIncident;
+        this.resolved = false;
     }
 
     public int getId() {
@@ -49,14 +61,6 @@ public class Incident {
         this.longitude = longitude;
     }
 
-    public int getCityId() {
-        return cityId;
-    }
-
-    public void setCityId(int cityId) {
-        this.cityId = cityId;
-    }
-
     public float getIntensity() {
         return intensity;
     }
@@ -65,18 +69,54 @@ public class Incident {
         this.intensity = intensity;
     }
 
-    public Date getUpdatedAt() {
-        return updatedAt;
+    public int getSensorId() {
+        return sensorId;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setSensorId(int sensorId) {
+        this.sensorId = sensorId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getCodeIncident() {
+        return codeIncident;
+    }
+
+    public void setCodeIncident(String codeIncident) {
+        this.codeIncident = codeIncident;
+    }
+
+    public void setCodeIncident(float lat, float lon, float intensity) {
+        this.codeIncident = "x:"+lat+";y:"+lon+";v:"+intensity+"#";
+    }
+
+    public void setCodeIncident(float lat, float lon) {
+        this.codeIncident = "x:"+lat+";y:"+lon+";v:"+this.intensity+"#";
+    }
+
+    public int getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(int locationId) {
+        this.locationId = locationId;
     }
 
     @Override
     public String toString() {
-        return "Incident "+this.id+ " - \n" +
-                "\tVille : "+ this.cityId + "\n" +
-                "\tIntensité : "+this.intensity + "\n";
+        return "{\n\t\"id\": "+this.id+ ",\n" +
+                "\t\"codeIncident\": \""+this.codeIncident+"\",\n"+
+                "\t\"type\": \""+this.type+"\",\n"+
+                "\t\"location\": "+ this.locationId + ",\n" +
+                "\t\"sensor\": " + this.sensorId + ",\n" +
+                "\t\"intensity\": "+this.intensity + "\n" +
+                "}";
     }
 }

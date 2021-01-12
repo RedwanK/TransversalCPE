@@ -1,84 +1,98 @@
 package com.simulation;
 
-import api.Api;
-import entities.Factory;
-import entities.Incident;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import api.ApiSimulator;
+import entities.*;
 
 import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Main {
 
-    private static volatile String jsonString = "";
+    private static volatile String jsonIncident = "";
+    private static volatile String jsonSensors = "";
+    private static volatile String jsonLocations = "";
+    private static volatile String jsonIntervention = "";
+
     private static volatile ReentrantLock lock = new ReentrantLock();
-    private static boolean breaker = false;
+
+    private static volatile ArrayList<Incident> incidents = new ArrayList<>();
+    private static volatile ArrayList<Sensor> sensors = new ArrayList<>();
+    private static volatile ArrayList<Location> locations = new ArrayList<>();
+    private static volatile ArrayList<Intervention> interventions = new ArrayList<Intervention>();
 
     public static void main(String[] args) {
         System.out.println("Main - starting...");
-//        Api api = new Api(args[0]); // http://localhost
-//
-//        Thread thread = new Thread() {
-//            @Override
-//            public void run() {
-//                super.run();
-//                while (!interrupted()) {
-//                    System.out.println("threading");
-//                    lock.lock();
-//                    try {
-//                        jsonString = api.makeRequest("GET", "/api/incidents/list");
-//                        TimeUnit.SECONDS.sleep(5);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                        return;
-//                    } finally {
-//                        lock.unlock();
-//                    }
-//
-//                }
-//            }
-//        };
-//
-//        thread.start();
-//        System.out.println("1st Thread started");
-//        Thread thread2 = new Thread() {
-//            @Override
-//            public void run() {
-//                super.run();
-//                do {
-//                    System.out.println("loop");
-//                    if (!jsonString.equals("")) {
-//                        System.out.println("locking");
-//                        lock.lock();
-//                        try {
-//                            System.out.println("JSON String :");
-//                            System.out.println(jsonString);
-//                            //jsonString = "";
-//                        } finally {
-//                            lock.unlock();
-//                        }
-//                        Factory.createIncidents();
-//                    }
-//                } while (true);
-//
-//                //thread.interrupt();
-//            }
-//        };
-//        thread2.start();
-//       // System.out.println("2nd Thread started");
-//        try {
-//            thread.join();
-//            thread2.join();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        ApiSimulator api;
+        if(args.length > 0) {
+            api = new ApiSimulator(args[0]); // http://localhost
+        } else {
+            api = new ApiSimulator();
+        }
 
-        Factory.createIncidents();
+        Thread apiRecurrentCalls = new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                System.out.println("Api Recurrent Calls Thread running.");
+
+                while (!interrupted()) {
+                    try {
+                        lock.lock();
+                        jsonIncident     = api.getListUnresolvedIncidents();
+                        jsonLocations    = api.getListLocations();
+                        jsonSensors      = api.getListSensors();
+                        jsonIntervention = api.getListIntervention();
+
+                        incidents     = Factory.getIncidentObjects(jsonIncident);
+                        locations     = Factory.getLocationObjects(jsonLocations);
+                        sensors       = Factory.getSensorObjects(jsonSensors);
+                        interventions = Factory.getInterventionObjects(jsonIntervention);
+                    } finally {
+                        lock.unlock();
+                    }
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                }
+            }
+        };
+
+
+        Thread simulatorThread = new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                Simulator simulator = new Simulator();
+                do {
+                    try {
+                        lock.lock();
+                        simulator.generateIncident(incidents, locations, sensors);
+                        HashMap<Integer, Intervention> intInc = new HashMap<>();
+                        int i = 0;
+                        while(i<intInc.size()){
+                            simulator.correctIncident(intInc.g);
+                        }
+
+
+                    } finally {
+                        lock.unlock();
+                    }
+                } while (true);
+            }
+        };
+        apiRecurrentCalls.start();
+        simulatorThread.start();
+        try {
+            apiRecurrentCalls.join();
+            simulatorThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         System.out.println("Main - ended");
     }
 }
