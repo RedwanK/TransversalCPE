@@ -1,0 +1,42 @@
+body {
+  background-color: #f9f7f7;
+}
+
+.mainContent {
+  font-family: Arial, Geneva, Verdana, sans-serif;
+  font-size: 14px;
+  margin-left: 10px;
+  margin-top: 10px;
+  color: #112d4e;
+}
+
+.title {
+  color: #3f72af;
+}
+
+a.main {
+  text-decoration: none;
+}
+
+a.main:hover {
+  text-decoration: underline;
+}
+
+p.padded {
+  padding: 50px;
+}
+
+.mt20 {
+  margin-top: 20px;
+}
+
+/* css to customize Leaflet default styles */
+.leaflet-popup-content-wrapper .leaflet-popup-content {
+  table{
+    border-collapse: collapse;
+  }
+  
+  th, td{
+    border: 1px solid black;
+  }
+}
