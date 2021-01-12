@@ -45,33 +45,40 @@ export class MapService {
    */
   public __addMarker(map: any, marker: Marker): void {
     if (marker !== undefined && marker != null) {
-      // Add marker
-      const icon = L.icon({
-        iconUrl: MapIconOptions.mapIcon[marker.type],
-        iconSize: MapIconOptions.iconSize,
-        iconAnchor: MapIconOptions.iconAnchor,
-        popupAnchor: MapIconOptions.popupAnchor,
-      });
+      if (!marker.m) {
+        // Add marker
+        const icon = L.icon({
+          iconUrl: MapIconOptions.mapIcon[marker.type],
+          iconSize: MapIconOptions.iconSize,
+          iconAnchor: MapIconOptions.iconAnchor,
+          popupAnchor: MapIconOptions.popupAnchor,
+        });
 
-      let m: L.marker;
+        let m: L.marker;
 
-      let x: number;
-      let y: number;
+        let x: number;
+        let y: number;
 
-      x = marker.lat;
-      y = marker.long;
+        x = marker.lat;
+        y = marker.long;
 
-      if (x !== undefined && !isNaN(x) && y !== undefined && !isNaN(y)) {
-        // okay to add
-        m = L.marker([x, y], { icon: icon });
-        if (marker.popup) {
-          m.bindPopup(marker.popup);
+        if (x !== undefined && !isNaN(x) && y !== undefined && !isNaN(y)) {
+          
+          // okay to add
+          m = L.marker([x, y], { icon: icon });
+          if (marker.popup) {
+            m.bindPopup(marker.popup);
+          }
+          m.addTo(map);
+          marker.m = m;
+          
         }
-        m.addTo(map);
-        marker.m = m;
-      }
-      else {
-        console.log('MARKER ERROR, x: ', x, ' y: ', y);
+        else {
+          console.log('MARKER ERROR, x: ', x, ' y: ', y);
+        }
+
+      } else {
+        marker.m.addTo(map);
       }
     }
   }
