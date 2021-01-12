@@ -48,6 +48,26 @@ class IncidentController extends AbstractFOSRestController
     }
 
     /**
+     * Lists all Incidents with interventions.
+     * @Rest\Get("/incidents/{id}/intervention")
+     *
+     * @return Response
+     */
+    public function getInterventionAction($id)
+    {
+        $repository = $this->getDoctrine()->getRepository(Intervention::class);
+        $incidentRepository = $this->getDoctrine()->getRepository(Incident::class);
+        $incident = $incidentRepository->findOneBy(['id' => $id]);
+        if(!$incident) {
+            return $this->handleView($this->view(['error' => "unknown incident"]));
+        }
+
+        $intervention = $repository->findOneBy(['incident' => $incident]);
+
+        return $this->handleView($this->view([$intervention]));
+    }
+
+    /**
      * Lists all Incidents with no interventions.
      * @Rest\Get("/incidents/no-interventions/list")
      *
