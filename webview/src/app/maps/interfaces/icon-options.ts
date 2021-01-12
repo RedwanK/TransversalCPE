@@ -5,7 +5,8 @@ export interface IconOptions
   mapIcon: {
     location: string,
     fire: string,
-    fireExtinguisher: string,
+    fireHuge: string,
+    fireSmall: string,
     fireTruck: string
   },
   popupAnchor: number[];

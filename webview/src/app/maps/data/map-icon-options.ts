@@ -8,8 +8,9 @@ export const MapIconOptions: IconOptions =
 {
   mapIcon: {
     location: './assets/maps/location.png',
-    fire: './assets/maps/fire.png',
-    fireExtinguisher: './assets/maps/fire-extinguisher.png',
+    fire: './assets/maps/fire.gif',
+    fireHuge: './assets/maps/fire-huge.gif',
+    fireSmall: './assets/maps/fire-small.gif',
     fireTruck: './assets/maps/fire-truck.png'
   },
   iconSize: [38, 38],

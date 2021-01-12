@@ -24,6 +24,7 @@ import { DataService } from './services/data.service';
 import { Incident } from './interfaces/incident.interface';
 import { takeUntil } from 'rxjs/operators';
 import { ApiService } from './services/api.service';
+import { MapService } from './services/map.service';
 
 /**
  * Leaflet Map Component
@@ -67,7 +68,8 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     @Inject(INIT_COORDS) protected _initCoords: { lat: number, long: number }, 
     private locationService: LocationService,
     private dataService: DataService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private mapService: MapService
   ) {
     this.baseLayer = null;
 
@@ -92,7 +94,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.__renderMap();
 
     // Subscribe to api
-    const source = interval(10000);
+    const source = interval(5000);
     this.subscription = source.subscribe(val => this.__updateFromApi());
 
     // Get current location
@@ -106,10 +108,11 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
         lat: pos.lat, 
         long: pos.lng,
         type: 'location',
-        popup: 'Vous êtes ici en somme.'
+        popup: 'Vous êtes ici en somme.',
+        m: null
       };
 
-      this.apiService.__addMarker(this.map, m);
+      this.mapService.__addMarker(this.map, m);
       this.map.setView([this._initCoords.lat, this._initCoords.long], 10);
     });
   }
@@ -187,7 +190,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
   protected __updateMapSize(): void {
     // update width/height settings as you see fit
     this.currentWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    this.currentHeight = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight) - 150;
+    this.currentHeight = (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight) - 120;
   }
 
   /**
