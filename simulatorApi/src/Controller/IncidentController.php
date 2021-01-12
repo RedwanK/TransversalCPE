@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 use App\Entity\City;
+use App\Entity\Intervention;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,6 +25,45 @@ class IncidentController extends AbstractFOSRestController
     {
         $repository = $this->getDoctrine()->getRepository(Incident::class);
         $incidents = $repository->findall();
+        return $this->handleView($this->view($incidents));
+    }
+
+    /**
+     * Lists all Incidents with interventions.
+     * @Rest\Get("/incidents/with-interventions/list")
+     *
+     * @return Response
+     */
+    public function getIncidentWithInterventionsAction()
+    {
+        $repository = $this->getDoctrine()->getRepository(Intervention::class);
+        $incidents = [];
+        foreach($repository->findBy(['resolvedAt' => null]) as $intervention) {
+            if($intervention->getIncident()->getResolvedAt() === null) {
+                $incidents[] = $intervention->getIncident();
+            }
+        }
+
+        return $this->handleView($this->view($incidents));
+    }
+
+    /**
+     * Lists all Incidents with no interventions.
+     * @Rest\Get("/incidents/no-interventions/list")
+     *
+     * @return Response
+     */
+    public function getIncidentNoInterventionsAction()
+    {
+        $repository = $this->getDoctrine()->getRepository(Incident::class);
+        $interventionRepository = $this->getDoctrine()->getRepository(Intervention::class);
+        $incidents = [];
+        foreach($repository->findBy(['resolved_at' => null]) as $incident) {
+            if(!$interventionRepository->findOneBy(['incident' => $incident, 'resolvedAt' => null])){
+                $incidents[] = $incident;
+            }
+        }
+
         return $this->handleView($this->view($incidents));
     }
 
@@ -59,6 +99,30 @@ class IncidentController extends AbstractFOSRestController
             return $this->handleView($this->view(['status' => 'ok'], Response::HTTP_CREATED));
         }
         return $this->handleView($this->view($form->getErrors()));
+    }
+
+    /**
+     * Update Incident intensity.
+     * @Rest\Post("/incidents/{id}/update")
+     *
+     * @return Response
+     */
+    public function postIncidentUpdateAction(Request $request, $id)
+    {
+        $incident = $this->getDoctrine()->getRepository(Incident::class)->findOneBy(['id' => $id]);
+        if(!$incident) {
+            return $this->handleView($this->view(['error' => 'unknown incident'], Response::HTTP_BAD_REQUEST));
+        }
+        $form = $this->createForm(IncidentType::class, $incident);
+        $data = json_decode($request->getContent(), true);
+        if (isset($data['intensity'])) {
+            $incident->setIntensity($data['intensity']);
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($incident);
+            $em->flush();
+            return $this->handleView($this->view(['status' => 'ok'], Response::HTTP_CREATED));
+        }
+        return $this->handleView($this->view(['error' => "intensity not set in json body"]));
     }
 
     /**
