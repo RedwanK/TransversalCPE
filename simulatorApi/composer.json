@@ -12,6 +12,7 @@
         "doctrine/orm": "^2.8",
         "friendsofsymfony/rest-bundle": "^3.0",
         "gedmo/doctrine-extensions": "^3.0",
+        "guzzlehttp/guzzle": "^7.2",
         "jms/serializer-bundle": "^3.7",
         "nelmio/cors-bundle": "^2.1",
         "sensio/framework-extra-bundle": "^5.6",
