@@ -27,13 +27,51 @@
 					"response": []
 				},
 				{
+					"name": "List unresolved Interventions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/intervention/unresolved/list",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"intervention",
+								"unresolved",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Resolved Interventions",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/intervention/resolve/1",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"intervention",
+								"resolve",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Create intervention",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"coefficient\" : 1.2,\n    \"numberVehicles\": 1,\n    \"numberAgents\": 6,\n    \"incident\": 4,\n    \"team\": 3\n}"
+							"raw": "{\n    \"coefficient\" : 1.2,\n    \"numberVehicles\": 1,\n    \"numberAgents\": 6,\n    \"incident\": 5,\n    \"team\": 3\n}"
 						},
 						"url": {
 							"raw": "{{ENV}}/intervention/create",
@@ -213,7 +251,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"type\" : \"fire\",\n    \"codeIncident\": \"ly012021_256\",\n    \"intensity\": 3.9,\n    \"location\": 1\n}"
+							"raw": "{\n    \"type\" : \"fire\",\n    \"codeIncident\": \"x:45.7640;y:4.8357;v:7.9#\",\n    \"intensity\": 7.9,\n    \"location\": 1\n}"
 						},
 						"url": {
 							"raw": "{{ENV}}/incident/create",
