@@ -174,7 +174,15 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": ""
+							"raw": "{{ENV}}/incidents/10/intervention",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"incidents",
+								"10",
+								"intervention"
+							]
 						}
 					},
 					"response": []
