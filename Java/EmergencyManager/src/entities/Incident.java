@@ -2,7 +2,7 @@ package entities;
 
 import java.util.Date;
 
-public class Incident {
+public class Incident implements Comparable<Incident> {
     private int id;
     private float latitude;
     private float longitude;
@@ -71,5 +71,10 @@ public class Incident {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public int compareTo(Incident inc) {
+        return ((Float)this.getIntensity()).compareTo(inc.getIntensity());
     }
 }

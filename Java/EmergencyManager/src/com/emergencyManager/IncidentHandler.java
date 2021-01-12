@@ -14,6 +14,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+/**
+ * This class controls the listener linked to the API, it offers 3 methods : 1. control the listning thread
+ * 2. and 3. return the latest team and incident
+ */
 public class IncidentHandler {
 
     private static volatile String jsonStringInci = "";
@@ -31,8 +35,7 @@ public class IncidentHandler {
                 lockInci.lock();
                 try {
                     System.out.println("requesting");
-                    jsonStringInci = api.makeRequest("GET", "/api/incident/list");
-                    jsonStringTeam = api.makeRequest("GET", "/api/team/list");
+                    jsonStringInci = api.getRequest("/api/incident/list");
                     TimeUnit.SECONDS.sleep(5);
                 } catch (InterruptedException e) {
                     return;
@@ -41,7 +44,7 @@ public class IncidentHandler {
                 }
                 lockTeam.lock();
                 try {
-                    jsonStringTeam = api.makeRequest("GET", "/api/team/list");
+                    jsonStringTeam = api.getRequest("/api/team/list");
                     TimeUnit.SECONDS.sleep(5);
                 } catch (InterruptedException e) {
                     return;
@@ -52,16 +55,28 @@ public class IncidentHandler {
         }
     };
 
-    public void incidentListener(String order) {
+    /**
+     * @param order
+     * @throws InterruptedException
+     * This methods is used to control the thread that listens to the api
+     */
+    public void incidentListener(String order) throws InterruptedException {
         if(order.equals("start")) {
             System.out.println("starting listener");
             thread1.start();
         } else if(order.equals("stop")){
             System.out.println("Stopping listener");
             thread1.interrupt();
+        } else if(order.equals("join")){
+            System.out.println("Waiting for listener");
+            thread1.join();
         }
     }
 
+    /**
+     * @return
+     * This methods returns the latest incidents the handler got from the api.
+     */
     public ArrayList<Incident> latestIncidents(){
         JSONParser pars = new JSONParser();
         ArrayList<Incident> latests = new ArrayList<>();
@@ -87,6 +102,10 @@ public class IncidentHandler {
         return latests;
     }
 
+    /**
+     * @return
+     * This methods returns the latest teams the handler got from the api.
+     */
     public ArrayList<Team> latestTeams(){
         JSONParser pars = new JSONParser();
         ArrayList<Team> latests = new ArrayList<>();
@@ -100,11 +119,6 @@ public class IncidentHandler {
                 JSONArray oagents = (JSONArray) o.get("agents");
                 JSONArray ovehicles = (JSONArray) o.get("vehicles");
                 float coeffSum = 0;
-                ArrayList agid = new ArrayList();
-                ArrayList veid = new ArrayList();
-                //JSONObject ojob = (JSONObject) oagents.get("job");
-                //JSONObject ocatveh = (JSONObject) ovehicles.get("category_vehicle");
-
                 int j = 0;
                 while(j < oagents.size()){
                     JSONObject oagent = (JSONObject) oagents.get(i);
@@ -117,10 +131,9 @@ public class IncidentHandler {
                     coeffSum += (float)(double)((JSONObject)ovehicle.get("category_vehicle")).get("coefficient");
                     k++;
                 }
-                Team latest = new Team((int)(long)o.get("id"), (String)o.get("name"), coeffSum);
+                Team latest = new Team((int)(long)o.get("id"), (String)o.get("name"),ovehicles.size(), oagents.size(), coeffSum);
                 latests.add(latest);
                 i++;
-                System.out.println(coeffSum);
             }
         } catch (ParseException e) {
             lockTeam.unlock();

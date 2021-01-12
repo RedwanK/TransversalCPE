@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import entities.Incident;
+import entities.Intervention;
 import entities.Team;
 
 public class Main {
@@ -10,13 +11,16 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         IncidentHandler handler = new IncidentHandler();
         handler.incidentListener("start");
-        ArrayList incidents = handler.latestIncidents();
-        ArrayList teams = handler.latestTeams();
-        System.out.println("liste incidents : "+incidents);
-        System.out.println("incident 1 intensity : "+((Incident)incidents.get(0)).getIntensity());
-        System.out.println("liste équipe : "+teams);
-        System.out.println("équipe 1 coeff (efficiency): "+((Team)teams.get(0)).getCoeff());
-        handler.incidentListener("stop");
-        TimeUnit.SECONDS.sleep(5);
+        InterventionGenerator generator = new InterventionGenerator();
+        while(true){
+            ArrayList incidents = handler.latestIncidents();
+            ArrayList teams = handler.latestTeams();
+            if(!incidents.isEmpty() && !teams.isEmpty()) {
+                ArrayList<Intervention> ints = generator.create(incidents, teams);
+                for (Intervention inter : ints) {
+                    generator.send(inter);
+                }
+            }
+        }
     }
 }
