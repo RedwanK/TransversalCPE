@@ -31,11 +31,11 @@ public class IncidentHandler {
             super.run();
             while (!interrupted()) {
                 System.out.println("threading");
-                Api api = new Api("http://localhost");
+                Api api = new Api("http://emergency-api.local");
                 lockInci.lock();
                 try {
                     System.out.println("requesting for incidents ...");
-                    jsonStringInci = api.getRequest("/api/incidents/unresolved/list");
+                    jsonStringInci = api.getRequest("/api/incidents/no-intervention/list");
                     TimeUnit.SECONDS.sleep(5);
                 } catch (InterruptedException e) {
                     return;
@@ -89,8 +89,7 @@ public class IncidentHandler {
             while (i < jarry.size()) {
                 JSONObject o = (JSONObject) jarry.get(i);
                 JSONObject oloc = (JSONObject) o.get("location");
-                JSONObject ocity = (JSONObject) oloc.get("city");
-                Incident latest = new Incident((int) (long) o.get("id"), (float) (double) oloc.get("latitude"), (float) (double) oloc.get("longitude"), (int) (long) ocity.get("id"), (float) (double) o.get("intensity"), (Date) o.get("updatedAt"));
+                Incident latest = new Incident((int) (long) o.get("id"), (float) (double) oloc.get("latitude"), (float) (double) oloc.get("longitude"), (int) (long) oloc.get("id"), (float) (double) o.get("intensity"), (Date) o.get("updatedAt"));
                 latests.add(latest);
                 i++;
             }

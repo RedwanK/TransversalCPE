@@ -6,7 +6,7 @@ public class Incident implements Comparable<Incident> {
     private int id;
     private float latitude;
     private float longitude;
-    private int cityId;
+    private int locId;
     private float intensity;
     private Date updatedAt;
 
@@ -16,11 +16,11 @@ public class Incident implements Comparable<Incident> {
         this.id = id;
     }
 
-    public Incident(int id, float latitude, float longitude, int cityId, float intensity, Date updatedAt) {
+    public Incident(int id, float latitude, float longitude, int locId, float intensity, Date updatedAt) {
         this.id = id;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.cityId = cityId;
+        this.locId = this.locId;
         this.intensity = intensity;
         this.updatedAt = updatedAt;
     }
@@ -49,12 +49,12 @@ public class Incident implements Comparable<Incident> {
         this.longitude = longitude;
     }
 
-    public int getCityId() {
-        return cityId;
+    public int getLocId() {
+        return locId;
     }
 
-    public void setCityId(int cityId) {
-        this.cityId = cityId;
+    public void setLocId(int locId) {
+        this.locId = locId;
     }
 
     public float getIntensity() {

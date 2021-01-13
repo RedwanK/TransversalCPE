@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class Api {
 
-    protected String baseURL = "http://localhost";
+    protected String baseURL = "http://emergency-api.local";
     protected HashMap<String, String> headers;
     HashMap<String, String> getHeaders = new HashMap<String, String>(){{
         put("Accept", "application/json");

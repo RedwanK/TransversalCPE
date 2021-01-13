@@ -59,7 +59,7 @@ public class InterventionGenerator {
         boolean greatsuccess = false;
         JSONObject json_msg = new JSONObject();
         JSONParser pars = new JSONParser();
-        Api api = new Api("http://localhost");
+        Api api = new Api("http://emergency-api.local");
 
         json_msg.put("coefficient", inte.getCoeff());
         json_msg.put("numberVehicles", inte.getNum_veh());
