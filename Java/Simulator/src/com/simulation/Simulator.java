@@ -85,6 +85,11 @@ public class Simulator {
         return incident;
     }
 
+    /**
+     * Increases the intensity of an incident
+     * @param incident
+     * @return
+     */
     public Incident aggravateIncident(Incident incident){
         float intensity = incident.getIntensity()+aggravationRate;
         ApiSimulator api = new ApiSimulator();
