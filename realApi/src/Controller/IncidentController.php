@@ -28,6 +28,7 @@ class IncidentController extends AbstractFOSRestController
         $em = $this->getDoctrine()->getManager();
         $data = json_decode($request->getContent(), true);
         $location = $em->getRepository(Location::class)->findOneBy(['latitude' => $data['x'], 'longitude' => $data['y']]);
+
         if(!$location) {
             $location = new Location();
             $location->setLatitude($data['x']);
@@ -36,11 +37,13 @@ class IncidentController extends AbstractFOSRestController
 
         $incident = $em->getRepository(Incident::class)->findOneBy(['location' => $location, 'resolved_at' => null]);
         if(!$incident) {
-            $incident= new Incident();
-            $incident->setCodeIncident("x:".$data['x'].";y:".$data['y'].";v:".$data['v']."#");
-            $incident->setLocation($location);
-            $incident->setIntensity(floatval($data['v']));
-            $incident->setType($type);
+            if($data["v"] > 0) {
+                $incident= new Incident();
+                $incident->setCodeIncident("x:".$data['x'].";y:".$data['y'].";v:".$data['v']."#");
+                $incident->setLocation($location);
+                $incident->setIntensity(floatval($data['v']));
+                $incident->setType($type);
+            }
         } else {
             if(floatval($data['v']) == 0) {
                 $incident->setResolvedAt(new \DateTime());
