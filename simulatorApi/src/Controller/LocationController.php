@@ -29,6 +29,28 @@ class LocationController extends AbstractFOSRestController
     }
 
     /**
+     * Lists all Locations.
+     * @Rest\Get("/locations/free/list")
+     *
+     * @return Response
+     */
+    public function getFreeLocationAction()
+    {
+        $repository = $this->getDoctrine()->getRepository(Location::class);
+        $incidentRepository = $this->getDoctrine()->getRepository(Incident::class);
+        $locations = $repository->findAll();
+        $freeLocations = [];
+        foreach($locations as $location) {
+            $incident = $incidentRepository->findOneBy(['location' => $location, "resolved_at" => null]);
+            if(!$incident) {
+                $freeLocations[] = $location;
+            }
+        }
+
+        return $this->handleView($this->view($freeLocations));
+    }
+
+    /**
      * Create Location.
      * @Rest\Post("/locations/create")
      *

@@ -45,6 +45,9 @@ class IncidentController extends AbstractFOSRestController
                 $incident->setResolvedAt(new \DateTime());
             } else {
                 $incident->setIntensity(floatval($data['v']));
+                if($incident->getIntensity() <= 0 ) {
+                    $incident->setResolvedAt(new \DateTime());
+                }
             }
         }
 
@@ -67,6 +70,24 @@ class IncidentController extends AbstractFOSRestController
         return $this->handleView($this->view($incidents));
     }
 
+    /**
+     * Lists all resolved Incidents.
+     * @Rest\Get("/incidents/resolved/list")
+     *
+     * @return Response
+     */
+    public function getResolvedIncidentAction()
+    {
+        $repository = $this->getDoctrine()->getRepository(Incident::class);
+        $incidents = $repository->findAll();
+        $resolvedIncidents = [];
+        foreach($incidents as $incident) {
+            if ($incident->getResolvedAt() !== null) {
+                $resolvedIncidents[] = $incident;
+            }
+        }
+        return $this->handleView($this->view($resolvedIncidents));
+    }
 
     /**
      * Lists all Incidents with no interventions.
