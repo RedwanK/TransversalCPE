@@ -24,9 +24,18 @@ public class Incident {
      * @param type
      * @param codeIncident
      * @param locationId
-     * @param sensorId
      * @param intensity
      */
+    public Incident(int id, String type, String codeIncident, int locationId, float intensity, float lat, float lon) {
+        this.id = id;
+        this.type = type;
+        this.locationId = locationId;
+        this.intensity = intensity;
+        this.latitude = lat;
+        this.longitude = lon;
+        this.codeIncident = codeIncident;
+        this.resolved = false;
+    }
     public Incident(int id, String type, String codeIncident, int locationId, int sensorId, float intensity) {
         this.id = id;
         this.type = type;
@@ -67,6 +76,7 @@ public class Incident {
 
     public void setIntensity(float intensity) {
         this.intensity = intensity;
+        setCodeIncident(intensity);
     }
 
     public int getSensorId() {
@@ -94,10 +104,17 @@ public class Incident {
     }
 
     public void setCodeIncident(float lat, float lon, float intensity) {
+        this.latitude = lat;
+        this.longitude = lon;
         this.codeIncident = "x:"+lat+";y:"+lon+";v:"+intensity+"#";
     }
 
+    public void setCodeIncident(float intensity) {
+        this.codeIncident = "x:"+this.latitude+";y:"+this.longitude+";v:"+this.intensity+"#";
+    }
     public void setCodeIncident(float lat, float lon) {
+        this.latitude = lat;
+        this.longitude = lon;
         this.codeIncident = "x:"+lat+";y:"+lon+";v:"+this.intensity+"#";
     }
 
@@ -111,12 +128,17 @@ public class Incident {
 
     @Override
     public String toString() {
-        return "{\n\t\"id\": "+this.id+ ",\n" +
+        return "{\n" +
                 "\t\"codeIncident\": \""+this.codeIncident+"\",\n"+
                 "\t\"type\": \""+this.type+"\",\n"+
                 "\t\"location\": "+ this.locationId + ",\n" +
-                "\t\"sensor\": " + this.sensorId + ",\n" +
                 "\t\"intensity\": "+this.intensity + "\n" +
                 "}";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        Incident inc = (Incident) obj;
+        return this.id == inc.getId();
     }
 }

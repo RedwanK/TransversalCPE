@@ -16,7 +16,7 @@ public class Api {
     protected String baseURL = "http://localhost";
     protected HashMap<String, String> headers;
     HashMap<String, String> getHeaders = new HashMap<String, String>(){{
-        put("Accept", "application/json");
+        put("Accept", "*/*");
     }};
 
     HashMap<String, String> postHeaders = new HashMap<String, String>(){{

@@ -3,12 +3,22 @@ package com.simulation;
 import api.ApiSimulator;
 import entities.Incident;
 
-public class MainTest {
-    public static void main(String[] args) {
-        ApiSimulator api = new ApiSimulator();
-        Incident incident = new Incident(-1,"redman le sacré zeub","chlib",1,1,1.0f);
+import java.util.ArrayList;
 
-        //System.out.println(api.getListUnresolvedIncidents());
-        System.out.println(api.postIncident(incident));
+public class MainTest {
+    public static void main(String[] args){
+        populate();
+    }
+    private static void populate() {
+        int i = 1;
+        int nb = 8;
+        while (nb-i != 0){
+            if (nb-i<2) {
+
+            }
+            Incident incident = new Incident(i,"redman le sacré zeub","chlib",1,1.0f);
+            new ApiSimulator().postIncident(incident);
+            i++;
+        }
     }
 }

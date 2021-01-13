@@ -4,22 +4,25 @@ import api.ApiSimulator;
 import entities.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Main {
 
-    private static volatile String jsonIncident = "";
-    private static volatile String jsonSensors = "";
+    private static volatile String jsonAllIncidents = "";
+    private static volatile String jsonIncidentWInt = "";
+    private static volatile String jsonIncidentWOutInt = "";
+//    private static volatile String jsonSensors = "";
     private static volatile String jsonLocations = "";
-    private static volatile String jsonIntervention = "";
+//    private static volatile String jsonIntervention = "";
 
     private static volatile ReentrantLock lock = new ReentrantLock();
 
-    private static volatile ArrayList<Incident> incidents = new ArrayList<>();
-    private static volatile ArrayList<Sensor> sensors = new ArrayList<>();
+    private static volatile ArrayList<Incident> allIncidents = new ArrayList<>();
+    private static volatile ArrayList<Incident> incidentsWInt = new ArrayList<>();
+    private static volatile ArrayList<Incident> incidentsWOutInt = new ArrayList<>();
+//    private static volatile ArrayList<Sensor> sensors = new ArrayList<>();
     private static volatile ArrayList<Location> locations = new ArrayList<>();
-    private static volatile ArrayList<Intervention> interventions = new ArrayList<Intervention>();
+//    private static volatile ArrayList<Intervention> interventions = new ArrayList<Intervention>();
 
     public static void main(String[] args) {
         System.out.println("Main - starting...");
@@ -39,18 +42,30 @@ public class Main {
                 while (!interrupted()) {
                     try {
                         lock.lock();
-                        jsonIncident     = api.getListUnresolvedIncidents();
-                        jsonLocations    = api.getListLocations();
-                        jsonSensors      = api.getListSensors();
-                        jsonIntervention = api.getListIntervention();
+                        System.out.println("Api calling.");
+                        jsonAllIncidents    = api.getListUnresolvedIncidents();
+                        jsonIncidentWInt    = api.getListIncidentWithIntervention();
+                        jsonIncidentWOutInt = api.getListIncidentWithoutIntervention();
+                        jsonLocations       = api.getListLocations();
+//                        jsonSensors         = api.getListSensors();
+//                        jsonIntervention    = api.getListIntervention();
 
-                        incidents     = Factory.getIncidentObjects(jsonIncident);
-                        locations     = Factory.getLocationObjects(jsonLocations);
-                        sensors       = Factory.getSensorObjects(jsonSensors);
-                        interventions = Factory.getInterventionObjects(jsonIntervention);
+                        allIncidents        = Factory.getIncidentObjects(jsonAllIncidents);
+                        incidentsWInt       = Factory.getIncidentObjects(jsonIncidentWInt);
+                        incidentsWOutInt    = Factory.getIncidentObjects(jsonIncidentWOutInt);
+                        locations           = Factory.getLocationObjects(jsonLocations);
+//                        sensors             = Factory.getSensorObjects(jsonSensors);
+//                        interventions       = Factory.getInterventionObjects(jsonIntervention);
+
+                        System.out.println(
+                                "Number of incidents in total : "+allIncidents.size()+"\n"
+                                +"Number of incidents managed by EmergencyManager : "+incidentsWInt.size()+"\n"
+                                +"Number of incidents not managed yet : "+incidentsWOutInt.size()
+                        );
                     } finally {
                         lock.unlock();
                     }
+
                     try {
                         Thread.sleep(5000);
                     } catch (InterruptedException e) {
@@ -70,22 +85,31 @@ public class Main {
                 do {
                     try {
                         lock.lock();
-                        simulator.generateIncident(incidents, locations, sensors);
-                        HashMap<Integer, Intervention> intInc = new HashMap<>();
-                        int i = 0;
-                        while(i<intInc.size()){
-                            simulator.correctIncident(intInc.g);
+                        System.out.println("Simulator loop");
+                        simulator.generateIncident(allIncidents, locations);
+                        for(Incident incident : incidentsWInt) {
+                            int currentIncidentIndex = incidentsWInt.indexOf(incident);
+                            String jsonInter = api.getInterventionByIncidentId(incident.getId());
+                            Intervention intervention = Factory.getInterventionFromJsonString(jsonInter);
+                            incident = simulator.correctIncident(incident, intervention);
+                            incidentsWInt.set(currentIncidentIndex, incident);
+                            if(incident.getId() == 0) {
+                                incidentsWInt.remove(currentIncidentIndex);
+                            }
                         }
-
 
                     } finally {
                         lock.unlock();
+                        System.out.println("lock released");
+
                     }
                 } while (true);
             }
         };
+
         apiRecurrentCalls.start();
         simulatorThread.start();
+
         try {
             apiRecurrentCalls.join();
             simulatorThread.join();

@@ -35,10 +35,26 @@ public class ApiSimulator extends Api {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("intensity", incident.getIntensity());
         jsonObject.put("location", incident.getLocationId());
-        jsonObject.put("sensor", incident.getSensorId());
         jsonObject.put("type", incident.getType());
         jsonObject.put("codeIncident", incident.getCodeIncident());
         String stringResponse = this.postRequest("/api/incidents/create", jsonObject.toJSONString());
+
+        JSONObject jsonResponse = new JSONObject();
+        try {
+            jsonResponse = (JSONObject) parser.parse(stringResponse);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return ((String)jsonResponse.get("status")).equals("ok");
+    }
+
+    public boolean postUpdateIntensityIncident(Incident incident) {
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("intensity", incident.getIntensity());
+        jsonObject.put("codeIncident", incident.getCodeIncident());
+        String stringResponse = this.postRequest("/api/incidents/"+incident.getId()+"/update", jsonObject.toJSONString());
 
         JSONObject jsonResponse = new JSONObject();
         try {
@@ -97,6 +113,24 @@ public class ApiSimulator extends Api {
     public String getListCities() {
         return this.getRequest("/api/cities/list");
     }
+
+    public String getListIncidentWithIntervention() {
+        return this.getRequest("/api/incidents/with-interventions/list");
+    }
+
+    public String getListIncidentWithoutIntervention() {
+        return this.getRequest("/api/incidents/no-interventions/list");
+    }
+
+    public String getInterventionByIncidentId(int incidentId) {
+        return this.getRequest("/api/incidents/"+incidentId+"/intervention");
+    }
+
+    public String getSensorByLocationId(int locationId) {
+        return this.getRequest("/api/location/"+locationId+"/sensor");
+    }
+
+
 
 
 

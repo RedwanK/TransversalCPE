@@ -1,9 +1,7 @@
 package com.simulation;
 
 import api.ApiSimulator;
-import entities.Incident;
-import entities.Location;
-import entities.Sensor;
+import entities.*;
 import utils.Random;
 
 import java.util.ArrayList;
@@ -23,33 +21,32 @@ public class Simulator {
     }
 
     /**
-     * Generates a new incident randomly
-     * @param incidents
-     * @param locations
-     * @param sensors
-     * @return
+     * Generates a new incident randomly chosen
+     *
+     * @param incidents ArrayList
+     * @param locations ArrayList
+     * @return true if incident generated, false otherwise
      */
-    public boolean generateIncident(ArrayList<Incident> incidents, ArrayList<Location> locations, ArrayList<Sensor> sensors) {
+    public boolean generateIncident(ArrayList<Incident> incidents, ArrayList<Location> locations) {
 
         int nbIncidents = incidents.size();
         int nbLocations = locations.size();
-        int nbSensors   = sensors.size();
+        boolean generateBool = shouldIGenerateAnIncident(nbIncidents);
+        System.out.println("Incident generation : "+generateBool);
+        if (generateBool) {
+            Location location = locations.get(Random.randomInt(0, nbLocations));
 
-        Location location = locations.get(Random.randomInt(0, nbLocations));
-        Sensor sensor = sensors.get(Random.randomInt(0, nbSensors));
-
-        if (shouldIGenerateAnIncident(nbIncidents)) {
             Incident incident = new Incident();
             incident.setIntensity(Random.randomFloat(0, 10));
             incident.setLocationId(location.getId());
             incident.setCodeIncident(location.getLatitude(), location.getLongitude());
-            incident.setSensorId(sensor.getId());
 
-            if(new ApiSimulator().postIncident(incident)){ //TODO à modifier
-                System.out.println("Incident créé.\n"+incident);
+            if(new ApiSimulator().postIncident(incident)){
+                System.out.println("Incident generated.\n"+incident);
+                incidents.add(incident);
                 return true;
             } else {
-                System.out.println("Erreur lors de la création de l'incident");
+                System.out.println("Error when creating an incident");
                 return false;
             }
         }
@@ -57,19 +54,23 @@ public class Simulator {
     }
 
     /**
-     * Decreases an
+     * Decreases the intensity of an incident
      *
      * @param incident
-     * @param coef
      */
-    public void correctIncident(Incident incident, float coef) {
+    public Incident correctIncident(Incident incident, Intervention intervention) {
         float intensite = incident.getIntensity();
+        System.out.println("Current intensity : "+intensite);
+        float coef = intervention.getCoeff();
+        ApiSimulator api = new ApiSimulator();
+
         if(intensite <= 0) {
             incident.setIntensity(0);
-            ApiSimulator api = new ApiSimulator();
-            //api.postIncident(incident);
+            api.postUpdateIntensityIncident(incident);
             api.resolveIncident(incident.getId());
-
+            api.resolveIntervention(intervention.getId());
+            System.out.println("Intensity for incident "+incident.getId()+" is < 0 :resolved.");
+            return incident;
         } else if(intensite == coef) {
             incident.setIntensity(intensite-(this.baseIncidentResolutionRate));
         } else if(intensite < coef) {
@@ -78,9 +79,12 @@ public class Simulator {
             incident.setIntensity(intensite-(this.baseIncidentResolutionRate /4));
         }
 
+        api.postUpdateIntensityIncident(incident);
+        System.out.println("Intensity updated !!! (current value for incident "+incident.getId()+" : "+incident.getIntensity()+")");
+        return incident;
     }
 
     private boolean shouldIGenerateAnIncident(int size) {
-        return Random.randomFreq() > baseFrequency && size < maxConcurrentIncidents;
+        return Random.randomFreq()*frequency > baseFrequency && size < maxConcurrentIncidents;
     }
 }

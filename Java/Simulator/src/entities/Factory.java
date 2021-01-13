@@ -67,11 +67,12 @@ public class Factory {
             String codeIncident = (String) jsonObject.get("code_incident");
             float intensity = (float) (double) jsonObject.get("intensity");
             int locationId = (int) (long) ((JSONObject) jsonObject.get("location")).get("id");
-            int sensorId = (int) (long) ((JSONObject) jsonObject.get("sensor")).get("id");
-            Incident incident = new Incident(id, type, codeIncident, locationId, sensorId, intensity);
+            float lat, lon;
+            lat = (float)(double) ((JSONObject) jsonObject.get("location")).get("latitude");
+            lon = (float)(double) ((JSONObject) jsonObject.get("location")).get("longitude");
+            Incident incident = new Incident(id, type, codeIncident, locationId, intensity, lat, lon);
             incidents.add(incident);
         }
-        System.out.println("Current unresolved incidents : "+incidents.size());
 
         return incidents;
     }
@@ -91,7 +92,7 @@ public class Factory {
             String type = (String) jsonObject.get("type");
             String reference = (String) jsonObject.get("reference");
             String name = (String) jsonObject.get("name");
-            int locationId = (int) (double) ((JSONObject) jsonObject.get("location")).get("id");
+            int locationId = (int) (long) ((JSONObject) jsonObject.get("location")).get("id");
 
             Sensor sensor = new Sensor(id, name, type, reference, locationId);
             sensors.add(sensor);
@@ -100,7 +101,25 @@ public class Factory {
 
         return sensors;
     }
+    public static Intervention getInterventionFromJsonString(String jsonString) {
+        JSONParser parser = new JSONParser();
+        JSONArray jArray;
+        try {
+             jArray = (JSONArray) parser.parse(jsonString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return new Intervention();
+        }
+        JSONObject obj = (JSONObject) jArray.get(0);
+        int id = (int) (long) obj.get("id");
+        int nbVehicles = (int) (long) obj.get("number_vehicles");
+        int nbAgents = (int) (long) obj.get("number_agents");
+        float coef = (float) (double) obj.get("coefficient");
+        int incidentId = (int) (long) ((JSONObject) obj.get("incident")).get("id");
+        Intervention intervention = new Intervention(id, coef, nbVehicles, nbAgents, incidentId);
 
+        return intervention;
+    }
     public static ArrayList<Location> getLocationObjects(String jsonLocations) {
         ArrayList<Location> locations = new ArrayList<>();
         JSONArray jArray = getJsonArrayFromString(jsonLocations);
@@ -113,15 +132,15 @@ public class Factory {
         }
 
         for (JSONObject jsonObject : jsonObjects) { //for each incident
-            int id = (int) (double) jsonObject.get("id");
+            int id = (int) (long) jsonObject.get("id");
             float lat = (float) (double) jsonObject.get("latitude");
             float longi = (float) (double) jsonObject.get("longitude");
-//            int locationId = (int) (double) ((JSONObject) jsonObject.get("location")).get("id");
+//            int locationId = (int) (long) ((JSONObject) jsonObject.get("location")).get("id");
 
             Location location = new Location(id, lat, longi);
             locations.add(location);
         }
-        System.out.println("Number of sensors received : "+locations.size());
+        System.out.println("Number of locations received : "+locations.size());
 
 
         return locations;
@@ -139,16 +158,17 @@ public class Factory {
         }
 
         for (JSONObject jsonObject : jsonObjects) { //for each incident
-            int id = (int) (double) jsonObject.get("id");
-            int nbVehicles = (int) (double) jsonObject.get("number_vehicles");
-            int nbAgents = (int) (double) jsonObject.get("number_agents");
+            int id = (int) (long) jsonObject.get("id");
+            int nbVehicles = (int) (long) jsonObject.get("number_vehicles");
+            int nbAgents = (int) (long) jsonObject.get("number_agents");
             float coef = (float) (double) jsonObject.get("coefficient");
-            int incidentId = (int) (double) ((JSONObject) jsonObject.get("incident")).get("id");
+            int incidentId = (int) (long) ((JSONObject) jsonObject.get("incident")).get("id");
 
             Intervention intervention = new Intervention(id, coef, nbVehicles, nbAgents, incidentId);
             interventions.add(intervention);
         }
-        System.out.println("Number of sensors received : "+interventions.size());
+
+        System.out.println("Number of interventions received : "+interventions.size());
 
         return interventions;
     }
