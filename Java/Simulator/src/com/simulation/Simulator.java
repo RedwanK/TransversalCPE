@@ -4,6 +4,7 @@ import api.ApiSimulator;
 import entities.*;
 import utils.Random;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class Simulator {
@@ -29,10 +30,9 @@ public class Simulator {
      * @return true if incident generated, false otherwise
      */
     public boolean generateIncident(ArrayList<Incident> incidents, ArrayList<Location> locations) {
-
         int nbIncidents = incidents.size();
         int nbLocations = locations.size();
-        boolean generateBool = shouldIGenerateAnIncident(nbIncidents);
+        boolean generateBool = shouldIGenerateAnIncident(nbIncidents) && nbLocations>0;
         System.out.println("Incident generation : "+generateBool);
         if (generateBool) {
             Location location = locations.get(Random.randomInt(0, nbLocations));
@@ -105,10 +105,10 @@ public class Simulator {
 
     /**
      * Returns true or false, determining whether an incident is generated or not
-     * @param size
+     * @param nbCurrentIncident
      * @return
      */
-    private boolean shouldIGenerateAnIncident(int size) {
-        return Random.randomFreq()*frequency > baseFrequency && size < maxConcurrentIncidents;
+    private boolean shouldIGenerateAnIncident(int nbCurrentIncident) {
+        return Random.randomFreq()*frequency > baseFrequency && nbCurrentIncident < maxConcurrentIncidents;
     }
 }

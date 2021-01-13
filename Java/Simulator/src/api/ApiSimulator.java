@@ -106,6 +106,7 @@ public class ApiSimulator extends Api {
     /**
      * Lists all the Locations from the api
      * @return
+     * @deprecated replaced by getFreeLocations
      */
     public String getListLocations() {
         return this.getRequest("/api/locations/list");
@@ -128,6 +129,10 @@ public class ApiSimulator extends Api {
 
     public String getInterventionByIncidentId(int incidentId) {
         return this.getRequest("/api/incidents/"+incidentId+"/intervention");
+    }
+
+    public String getFreeLocations() {
+        return this.getRequest("/api/locations/free/list");
     }
 
 
