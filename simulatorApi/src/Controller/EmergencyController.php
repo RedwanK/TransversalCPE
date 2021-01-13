@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Incident;
+use Symfony\Component\Validator\Constraints\Date;
 
 /**
  * City controller.
@@ -82,14 +83,17 @@ class EmergencyController extends AbstractFOSRestController
 
         $incidents = json_decode($json);
         $doctrine = $this->getDoctrine();
+        $locationRepository = $doctrine->getRepository(Location::class);
         foreach($incidents as $incident) {
-            $icd = $doctrine->getRepository(Incident::class)->findOneBy(["location" => $incident->location]);
+            $location = $locationRepository->findOneBy(['latitude' => $incident->location->latitude, 'longitude' =>  $incident->location->longitude]);
+            $icd = $doctrine->getRepository(Incident::class)->findOneBy(["location" => $location, "resolved_at" => null]);
             if (!$icd) {
-                return $this->handleView($this->view(["error" => "unable to find corresponding incident"], Response::HTTP_BAD_REQUEST));
+                continue;
+                //return $this->handleView($this->view(["error" => "unable to find corresponding incident"], Response::HTTP_BAD_REQUEST));
             }
 
             if ($icd->getResolvedAt() == null) {
-                $icd->setResolvedAt($incident->resolved_at);
+                $icd->setResolvedAt(new \DateTime());
                 $icd->setIntensity($incident->intensity);
                 $icd->setcodeIncident($incident->code_incident);
 

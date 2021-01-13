@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Entity\Incident;
+use App\Entity\Intervention;
 use App\Entity\Location;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,6 +46,7 @@ class IncidentController extends AbstractFOSRestController
                 $incident->setResolvedAt(new \DateTime());
             } else {
                 $incident->setIntensity(floatval($data['v']));
+                $incident->setCodeIncident("x:".$data['x'].";y:".$data['y'].";v:".$data['v']."#");
                 if($incident->getIntensity() <= 0 ) {
                     $incident->setResolvedAt(new \DateTime());
                 }
@@ -98,7 +100,14 @@ class IncidentController extends AbstractFOSRestController
     public function getIncidentWithNoInterventionAction()
     {
         $repository = $this->getDoctrine()->getRepository(Incident::class);
-        $incidents = $repository->findBy(['intervention' => null, 'resolved_at' => null]);
+        $interventionRepository = $this->getDoctrine()->getRepository(Intervention::class);
+        $incidents = [];
+        foreach ($repository->findAll() as $incident) {
+            $intervention = $interventionRepository->findOneBy(['incident' => $incident, "resolvedAt" => null]);
+            if(!$intervention) {
+                $incidents[] = $incident;
+            }
+        }
         return $this->handleView($this->view($incidents));
     }
 }
