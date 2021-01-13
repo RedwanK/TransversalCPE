@@ -28,6 +28,7 @@ public class InterventionGenerator {
         teams.sort(null);
 
         if(pbs.size()<teams.size()){
+            System.out.println("easy case");
             int i = 0;
             for(Incident inc : pbs){
                 Intervention inte = new Intervention(teams.get(i).getCoeff(), teams.get(i).getNum_veh(), teams.get(i).getNum_age(), inc.getId(), teams.get(i).getId());
@@ -35,20 +36,13 @@ public class InterventionGenerator {
                 teams.remove(i);
             }
         } else {
-            int i = 0;
-            while(i<teams.size()){
-                Intervention inte = new Intervention(teams.get(i).getCoeff(), teams.get(i).getNum_veh(), teams.get(i).getNum_age(),  pbs.get(i).getId(), teams.get(i).getId());
+            System.out.println("hard case");
+            int i = teams.size()-1;
+            int j = 1;
+            while(i>-1){
+                Intervention inte = new Intervention(teams.get(i).getCoeff(), teams.get(i).getNum_veh(), teams.get(i).getNum_age(),  pbs.get(pbs.size()-j).getId(), teams.get(i).getId());
                 ints.add(inte);
-                i++;
-            }
-            int j = 0;
-            while(i<pbs.size()){
-                if(j == teams.size()-1){
-                    j = 0;
-                }
-                Intervention inte = new Intervention(teams.get(teams.size()-1).getCoeff(), teams.get(teams.size()-1).getNum_veh(), teams.get(teams.size()-1).getNum_age(), pbs.get(i).getId(), teams.get(teams.size()-1).getId());
-                ints.add(inte);
-                i++;
+                i--;
                 j++;
             }
         }
@@ -71,6 +65,7 @@ public class InterventionGenerator {
         json_msg.put("numberVehicles", inte.getNum_veh());
         json_msg.put("numberAgents", inte.getNum_age());
         json_msg.put("incident", inte.getIncid());
+        json_msg.put("team", inte.getTeamid());
 
         JSONObject json_status = new JSONObject();
         String data = json_msg.toJSONString();
