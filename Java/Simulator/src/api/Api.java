@@ -3,20 +3,28 @@ package api;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 
 public class Api {
 
-    protected String baseURL = "localhost";
-    protected HashMap<String, String> headers = new HashMap<String, String>(){{
+    protected String baseURL = "http://localhost";
+    protected HashMap<String, String> headers;
+    HashMap<String, String> getHeaders = new HashMap<String, String>(){{
         put("Accept", "*/*");
-        put("Accept-Encoding", "gzip, deflate, br");
-        put("Connection", "keep-alive");
     }};
+
+    HashMap<String, String> postHeaders = new HashMap<String, String>(){{
+        put("Accept", "application/json");
+        put("Content-type", "application/json; UTF-8");
+    }};
+
+    public Api() {}
 
     public Api(String url) {
         this.setBaseURL(url);
@@ -27,20 +35,21 @@ public class Api {
         this.setHeaders(headersArray);
     }
 
-    public String makeRequest(String method, String path) {
+    /**
+     * Requests the API with GET method
+     * @param path
+     * @return
+     */
+    public String getRequest(String path) {
 
         String urlString = this.baseURL+path;
         StringBuffer content = new StringBuffer();
         try {
             URL url = new URL(urlString);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod(method);
-
+            con.setRequestMethod("GET");
+            setHeaders(getHeaders);
             this.manageHeaders(con);
-
-//            con.setRequestProperty("Accept", "*/*");
-//            con.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
-//            con.setRequestProperty("Connection", "keep-alive");
 
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(con.getInputStream())
@@ -57,7 +66,49 @@ public class Api {
         }
 
         return content.toString();
+    }
 
+    /**
+     * Requests the api with POST method and a payload.
+     * @param path String - path/route after the baseUrl
+     * @param jsonBody String - Json string
+     * @return Json response
+     */
+ public String postRequest(String path, String jsonBody) {
+        String urlString = this.baseURL+path;
+        StringBuffer content = new StringBuffer();
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("POST");
+            setHeaders(postHeaders);
+            manageHeaders(con);
+            con.setDoOutput(true);
+
+            try {
+                OutputStream os = con.getOutputStream();
+                byte[] input = jsonBody.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            BufferedReader in = new BufferedReader(
+                    new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8)
+            );
+
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine);
+            }
+            in.close();
+            con.disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+
+        return content.toString();
     }
 
     /**
