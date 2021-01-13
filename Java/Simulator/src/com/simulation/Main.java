@@ -1,126 +1,132 @@
 package com.simulation;
 
-import api.Api;
-import entities.Incident;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import api.ApiSimulator;
+import entities.*;
+import utils.JsonManager;
 
 import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Main {
 
-    private static volatile String jsonString = "";
+    private static volatile String jsonAllIncidents = "";
+    private static volatile String jsonIncidentWInt = "";
+    private static volatile String jsonIncidentWOutInt = "";
+    private static volatile String jsonLocations = "";
+
     private static volatile ReentrantLock lock = new ReentrantLock();
-    private static boolean breaker = false;
+
+    private static volatile ArrayList<Incident> allIncidents = new ArrayList<>();
+    private static volatile ArrayList<Incident> incidentsWInt = new ArrayList<>();
+    private static volatile ArrayList<Incident> incidentsWOutInt = new ArrayList<>();
+    private static volatile ArrayList<Location> locations = new ArrayList<>();
+
+    private static volatile boolean firstApiCallsDone = false;
 
     public static void main(String[] args) {
-        Scanner input = new Scanner(System.in);
         System.out.println("Main - starting...");
-        Api api = new Api(args[0]); // http://localhost
+        ApiSimulator api;
+        if(args.length > 0) {
+            api = new ApiSimulator(args[0]); // http://localhost
+        } else {
+            api = new ApiSimulator();
+        }
 
-        Thread thread = new Thread() {
+        Thread apiRecurrentCalls = new Thread() {
             @Override
             public void run() {
                 super.run();
-                while (!interrupted()) {
-                    System.out.println("threading");
-                    lock.lock();
+                super.setName("api");
+                System.out.println("Api Recurrent Calls Thread running.");
+                while (true) {
                     try {
-                        jsonString = api.makeRequest("GET", "/api/incidents/list");
-                        createIncidents(jsonString);
-                        TimeUnit.SECONDS.sleep(5);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        return;
+                        lock.lock();
+                        System.out.println("Retrieving api data....");
+                        jsonAllIncidents    = api.getListUnresolvedIncidents();
+                        jsonIncidentWInt    = api.getListIncidentWithIntervention();
+                        jsonIncidentWOutInt = api.getListIncidentWithoutIntervention();
+                        jsonLocations       = api.getListLocations();
+
+                        allIncidents        = JsonManager.getIncidentObjects(jsonAllIncidents);
+                        incidentsWInt       = JsonManager.getIncidentObjects(jsonIncidentWInt);
+                        incidentsWOutInt    = JsonManager.getIncidentObjects(jsonIncidentWOutInt);
+                        locations           = JsonManager.getLocationObjects(jsonLocations);
+
+                        System.out.println(
+                                "Number of incidents in total : "+allIncidents.size()+"\n"
+                                +"Number of incidents managed by EmergencyManager : "+incidentsWInt.size()+"\n"
+                                +"Number of incidents not managed yet : "+incidentsWOutInt.size()
+                        );
                     } finally {
+                        System.out.println("...Api data retrieval done");
+                        firstApiCallsDone = true;
                         lock.unlock();
                     }
 
+                    try {
+                        Thread.sleep(2500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        return;
+                    }
                 }
             }
         };
 
-        thread.start();
-        System.out.println("1st Thread started");
-        Thread thread2 = new Thread() {
+
+        Thread simulatorThread = new Thread() {
             @Override
             public void run() {
                 super.run();
+                super.setName("simulator");
+                Simulator simulator = new Simulator();
                 do {
-                    System.out.println("loop");
-                    if (!jsonString.equals("")) {
-                        System.out.println("locking");
+                    try {
                         lock.lock();
-                        try {
-                            System.out.println("JSON String :");
-                            System.out.println(jsonString);
-                            //jsonString = "";
-                        } finally {
-                            lock.unlock();
+                        if(firstApiCallsDone){
+                            System.out.println("Computing...");
+                            int preAddSize = allIncidents.size();
+                            simulator.generateIncident(allIncidents, locations);
+                            System.out.println("Incident count : "+allIncidents.size()+"\n\t"+(allIncidents.size()-preAddSize)+" created.");
+                            for(Incident incident : incidentsWInt) {
+                                int currentIncidentIndex = incidentsWInt.indexOf(incident);
+                                String jsonInter = api.getInterventionByIncidentId(incident.getId());
+                                Intervention intervention = JsonManager.getInterventionFromJsonString(jsonInter);
+                                incident = simulator.correctIncident(incident, intervention);
+                                incidentsWInt.set(currentIncidentIndex, incident);
+                            }
+                            for(Incident incident : incidentsWOutInt) {
+                                int currentIncidentIndex = incidentsWOutInt.indexOf(incident);
+                                incident = simulator.aggravateIncident(incident);
+                                incidentsWOutInt.set(currentIncidentIndex, incident);
+                            }
                         }
+
+                    } finally {
+                        System.out.println("Finished com");
+                        lock.unlock();
+
+                    }
+
+                    try {
+                        Thread.sleep(2500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 } while (true);
-
-                //thread.interrupt();
             }
         };
-        //thread2.start();
-       // System.out.println("2nd Thread started");
-//        do {
-//            System.out.println("loop");
-//            if (!jsonString.equals("")) {
-//                lock.lock();
-//                try {
-//                    System.out.println("JSON String :");
-//                    System.out.println(jsonString);
-//                    //jsonString = "";
-//                } finally {
-//                    lock.unlock();
-//                }
-//            }
-//        } while (!breaker && !input.next().equalsIgnoreCase("q"));
-//
-//        thread.interrupt();
-//        Thread inputThread = new Thread(new InputThread());
-//        inputThread.start();
+
+        apiRecurrentCalls.start();
+        simulatorThread.start();
 
         try {
-            //inputThread.join();
-            thread.join();
-            thread2.join();
+            apiRecurrentCalls.join();
+            simulatorThread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         System.out.println("Main - ended");
-
-    }
-
-    public static ArrayList<Incident> createIncidents(String jsonString) {
-        JSONParser parser = new JSONParser();
-        ArrayList<Incident> incidents = new ArrayList<>();
-        JSONArray jArray = new JSONArray();
-        try {
-            jArray = (JSONArray)parser.parse(jsonString);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        int i = 0;
-//        while(i<jArray.size()) {
-//
-//            JSONObject o = (JSONObject)jArray.get(i);
-//            int id = (int) o.get("id");
-//            float latitude = (float) o.get("latitude");
-//            float longitude = (float) o.get("longitude");
-//            float intensity = (float) o.get("intensity");
-//
-//            //Incident incident = new Incident(, )
-//        }
-        return incidents;
     }
 }
