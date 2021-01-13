@@ -59,6 +59,6 @@ void ftoa(float n, char* res, int afterpoint)
         // is needed to handle cases like 233.007 
         fpart = fpart * pow(10, afterpoint); 
   
-        intToStr((int)fpart, res + i + 1, afterpoint); 
+        intToStr((int)round(fpart), res + i + 1, afterpoint); 
     } 
 }
