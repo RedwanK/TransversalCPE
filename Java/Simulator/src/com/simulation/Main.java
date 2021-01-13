@@ -2,7 +2,6 @@ package com.simulation;
 
 import api.ApiSimulator;
 import entities.*;
-
 import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -11,18 +10,14 @@ public class Main {
     private static volatile String jsonAllIncidents = "";
     private static volatile String jsonIncidentWInt = "";
     private static volatile String jsonIncidentWOutInt = "";
-//    private static volatile String jsonSensors = "";
     private static volatile String jsonLocations = "";
-//    private static volatile String jsonIntervention = "";
 
     private static volatile ReentrantLock lock = new ReentrantLock();
 
     private static volatile ArrayList<Incident> allIncidents = new ArrayList<>();
     private static volatile ArrayList<Incident> incidentsWInt = new ArrayList<>();
     private static volatile ArrayList<Incident> incidentsWOutInt = new ArrayList<>();
-//    private static volatile ArrayList<Sensor> sensors = new ArrayList<>();
     private static volatile ArrayList<Location> locations = new ArrayList<>();
-//    private static volatile ArrayList<Intervention> interventions = new ArrayList<Intervention>();
 
     public static void main(String[] args) {
         System.out.println("Main - starting...");
@@ -39,8 +34,7 @@ public class Main {
                 super.run();
                 super.setName("api");
                 System.out.println("Api Recurrent Calls Thread running.");
-
-                while (!interrupted()) {
+                while (true) {
                     try {
                         lock.lock();
                         System.out.println("Api calling.");
@@ -48,15 +42,11 @@ public class Main {
                         jsonIncidentWInt    = api.getListIncidentWithIntervention();
                         jsonIncidentWOutInt = api.getListIncidentWithoutIntervention();
                         jsonLocations       = api.getListLocations();
-//                        jsonSensors         = api.getListSensors();
-//                        jsonIntervention    = api.getListIntervention();
 
                         allIncidents        = Factory.getIncidentObjects(jsonAllIncidents);
                         incidentsWInt       = Factory.getIncidentObjects(jsonIncidentWInt);
                         incidentsWOutInt    = Factory.getIncidentObjects(jsonIncidentWOutInt);
                         locations           = Factory.getLocationObjects(jsonLocations);
-//                        sensors             = Factory.getSensorObjects(jsonSensors);
-//                        interventions       = Factory.getInterventionObjects(jsonIntervention);
 
                         System.out.println(
                                 "Number of incidents in total : "+allIncidents.size()+"\n"
@@ -68,7 +58,7 @@ public class Main {
                     }
 
                     try {
-                        Thread.sleep(5000);
+                        Thread.sleep(2500);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                         return;
@@ -96,15 +86,18 @@ public class Main {
                             Intervention intervention = Factory.getInterventionFromJsonString(jsonInter);
                             incident = simulator.correctIncident(incident, intervention);
                             incidentsWInt.set(currentIncidentIndex, incident);
-//                            if(incident.getIntensity() == 0) {
-//                                incidentsWInt.remove(currentIncidentIndex);
-//                            }
                         }
 
                     } finally {
                         lock.unlock();
                         System.out.println("lock released");
 
+                    }
+
+                    try {
+                        Thread.sleep(2500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 } while (true);
             }

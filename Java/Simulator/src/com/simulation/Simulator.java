@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class Simulator {
 
     private float frequency = 1.0f;
-    private int maxConcurrentIncidents = 20;
+    private int maxConcurrentIncidents = 2000;
     private float baseFrequency = .4f;
     private float baseIncidentResolutionRate = .1f;
 
@@ -67,8 +67,8 @@ public class Simulator {
         if(intensite <= 0) {
             incident.setIntensity(0);
             api.postUpdateIntensityIncident(incident);
-            api.resolveIncident(incident.getId());
-            api.resolveIntervention(intervention.getId());
+//            api.resolveIncident(incident.getId());
+//            api.resolveIntervention(intervention.getId());
             System.out.println("Intensity for incident "+incident.getId()+" is < 0 :resolved.");
             return incident;
         } else if(intensite == coef) {
