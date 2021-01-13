@@ -111,6 +111,7 @@ class IncidentController extends AbstractFOSRestController
         $incident = new Incident();
         $form = $this->createForm(IncidentType::class, $incident);
         $data = json_decode($request->getContent(), true);
+        if(isset($data['intensity'])) $data["intensity"] = number_format($data["intensity"], 2);
         $form->submit($data);
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -136,7 +137,8 @@ class IncidentController extends AbstractFOSRestController
         $form = $this->createForm(IncidentType::class, $incident);
         $data = json_decode($request->getContent(), true);
         if (isset($data['intensity'])) {
-            $incident->setIntensity($data['intensity']);
+            $incident->setIntensity(number_format($data['intensity'], 2));
+            $incident->setCodeIncident("x:".$incident->getLocation()->getLatitude().";y:".$incident->getLocation()->getLongitude().";v:".number_format($data["intensity"], 2)."#");
             $em = $this->getDoctrine()->getManager();
             $em->persist($incident);
             $em->flush();

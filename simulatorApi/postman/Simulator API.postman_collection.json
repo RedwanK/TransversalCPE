@@ -130,7 +130,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"type\" : \"fire\",\n    \"codeIncident\": \"x:45.7640;y:4.8357;v:7.9#\",\n    \"intensity\": 7.9,\n    \"location\": 1,\n    \"sensor\": 1\n}"
+							"raw": "{\n    \"type\" : \"fire\",\n    \"codeIncident\": \"x:45.7651;y:4.8357;v:5.9#\",\n    \"intensity\": 5.9,\n    \"location\": 1\n}"
 						},
 						"url": {
 							"raw": "{{ENV}}/incidents/create",
@@ -249,6 +249,25 @@
 							],
 							"path": [
 								"locations",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Free locations list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ENV}}/locations/free/list",
+							"host": [
+								"{{ENV}}"
+							],
+							"path": [
+								"locations",
+								"free",
 								"list"
 							]
 						}

@@ -45,7 +45,7 @@ public class Main {
                         jsonAllIncidents    = api.getListUnresolvedIncidents();
                         jsonIncidentWInt    = api.getListIncidentWithIntervention();
                         jsonIncidentWOutInt = api.getListIncidentWithoutIntervention();
-                        jsonLocations       = api.getListLocations();
+                        jsonLocations       = api.getFreeLocations();
 
                         allIncidents        = JsonManager.getIncidentObjects(jsonAllIncidents);
                         incidentsWInt       = JsonManager.getIncidentObjects(jsonIncidentWInt);
@@ -83,6 +83,7 @@ public class Main {
                 do {
                     try {
                         lock.lock();
+
                         if(firstApiCallsDone){
                             System.out.println("Computing...");
                             int preAddSize = allIncidents.size();

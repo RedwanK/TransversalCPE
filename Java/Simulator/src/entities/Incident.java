@@ -1,5 +1,7 @@
 package entities;
 
+import java.text.DecimalFormat;
+
 public class Incident {
     private int id;
     private String type = "fire";
@@ -106,16 +108,21 @@ public class Incident {
     public void setCodeIncident(float lat, float lon, float intensity) {
         this.latitude = lat;
         this.longitude = lon;
-        this.codeIncident = "x:"+lat+";y:"+lon+";v:"+intensity+"#";
+        String strIntensity = new DecimalFormat("#.00").format(intensity).toString().replaceAll(",",".");
+
+        this.codeIncident = "x:"+lat+";y:"+lon+";v:"+strIntensity+"#";
     }
 
     public void setCodeIncident(float intensity) {
-        this.codeIncident = "x:"+this.latitude+";y:"+this.longitude+";v:"+this.intensity+"#";
+        String strIntensity = new DecimalFormat("#.00").format(intensity).toString().replaceAll(",",".");
+        this.codeIncident = "x:"+this.latitude+";y:"+this.longitude+";v:"+strIntensity+"#";
     }
     public void setCodeIncident(float lat, float lon) {
         this.latitude = lat;
         this.longitude = lon;
-        this.codeIncident = "x:"+lat+";y:"+lon+";v:"+this.intensity+"#";
+        String strIntensity = new DecimalFormat("#.00").format(this.intensity).toString().replaceAll(",",".");
+
+        this.codeIncident = "x:"+lat+";y:"+lon+";v:"+strIntensity+"#";
     }
 
     public int getLocationId() {
