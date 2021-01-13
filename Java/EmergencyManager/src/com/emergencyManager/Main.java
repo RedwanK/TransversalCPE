@@ -12,13 +12,22 @@ public class Main {
         IncidentHandler handler = new IncidentHandler();
         handler.incidentListener("start");
         InterventionGenerator generator = new InterventionGenerator();
+        ArrayList<Incident> incidents;
+        ArrayList<Team> teams;
+        boolean msg_status;
+
         while(true){
-            ArrayList incidents = handler.latestIncidents();
-            ArrayList teams = handler.latestTeams();
+            incidents = handler.latestIncidents();
+            teams = handler.latestTeams();
             if(!incidents.isEmpty() && !teams.isEmpty()) {
                 ArrayList<Intervention> ints = generator.create(incidents, teams);
                 for (Intervention inter : ints) {
-                    generator.send(inter);
+                    msg_status = generator.send(inter);
+                    if(msg_status) {
+                        System.out.println("Intervention for Incident n°" + inter.getIncid() + " sent successfully");
+                    } else{
+                        System.out.println("Intervention for Incident n°" + inter.getIncid() + " had a problem at send");
+                    }
                 }
             }
         }

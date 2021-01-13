@@ -20,12 +20,12 @@ import org.json.simple.parser.ParseException;
  */
 public class IncidentHandler {
 
-    private static volatile String jsonStringInci = "";
+    private static volatile String jsonStringInci = "";                     // These two variables are shared between thread1 and main
     private static volatile String jsonStringTeam = "";
-    private static volatile ReentrantLock lockInci = new ReentrantLock();
+    private static volatile ReentrantLock lockInci = new ReentrantLock();   // Locks for concurrent access
     private static volatile ReentrantLock lockTeam = new ReentrantLock();
 
-    private Thread thread1 = new Thread() {
+    private Thread thread1 = new Thread() {                                 // The listener
         @Override
         public void run() {
             super.run();
@@ -34,8 +34,8 @@ public class IncidentHandler {
                 Api api = new Api("http://localhost");
                 lockInci.lock();
                 try {
-                    System.out.println("requesting");
-                    jsonStringInci = api.getRequest("/api/incident/list");
+                    System.out.println("requesting for incidents ...");
+                    jsonStringInci = api.getRequest("/api/incidents/unresolved/list");
                     TimeUnit.SECONDS.sleep(5);
                 } catch (InterruptedException e) {
                     return;
@@ -44,7 +44,8 @@ public class IncidentHandler {
                 }
                 lockTeam.lock();
                 try {
-                    jsonStringTeam = api.getRequest("/api/team/list");
+                    System.out.println("requesting for teams ...");
+                    jsonStringTeam = api.getRequest("/api/team/unresolved/list");
                     TimeUnit.SECONDS.sleep(5);
                 } catch (InterruptedException e) {
                     return;
@@ -62,28 +63,28 @@ public class IncidentHandler {
      */
     public void incidentListener(String order) throws InterruptedException {
         if(order.equals("start")) {
-            System.out.println("starting listener");
+            System.out.println("starting listener ...");
             thread1.start();
         } else if(order.equals("stop")){
-            System.out.println("Stopping listener");
+            System.out.println("Stopping listener ...");
             thread1.interrupt();
         } else if(order.equals("join")){
-            System.out.println("Waiting for listener");
+            System.out.println("Waiting for listener ...");
             thread1.join();
         }
     }
 
     /**
-     * @return
+     * @return ArrayList<Incident>
      * This methods returns the latest incidents the handler got from the api.
      */
     public ArrayList<Incident> latestIncidents(){
-        JSONParser pars = new JSONParser();
+        JSONParser parser = new JSONParser();
         ArrayList<Incident> latests = new ArrayList<>();
         JSONArray jarry = new JSONArray();
         lockInci.lock();
         try {
-            jarry = (JSONArray) pars.parse(jsonStringInci);
+            jarry = (JSONArray) parser.parse(jsonStringInci);
             int i = 0;
             while (i < jarry.size()) {
                 JSONObject o = (JSONObject) jarry.get(i);
@@ -94,7 +95,6 @@ public class IncidentHandler {
                 i++;
             }
         } catch (ParseException e) {
-            lockInci.unlock();
             return latests;
         } finally{
             lockInci.unlock();
@@ -107,12 +107,12 @@ public class IncidentHandler {
      * This methods returns the latest teams the handler got from the api.
      */
     public ArrayList<Team> latestTeams(){
-        JSONParser pars = new JSONParser();
+        JSONParser parser = new JSONParser();
         ArrayList<Team> latests = new ArrayList<>();
         JSONArray jarry = new JSONArray();
         lockTeam.lock();
         try {
-            jarry = (JSONArray) pars.parse(jsonStringTeam);
+            jarry = (JSONArray) parser.parse(jsonStringTeam);
             int i = 0;
             while (i < jarry.size()) {
                 JSONObject o = (JSONObject) jarry.get(i);
@@ -131,12 +131,11 @@ public class IncidentHandler {
                     coeffSum += (float)(double)((JSONObject)ovehicle.get("category_vehicle")).get("coefficient");
                     k++;
                 }
-                Team latest = new Team((int)(long)o.get("id"), (String)o.get("name"),ovehicles.size(), oagents.size(), coeffSum);
+                Team latest = new Team((int)(long)o.get("id"), (String)o.get("name"), oagents.size(), ovehicles.size(), coeffSum);
                 latests.add(latest);
                 i++;
             }
         } catch (ParseException e) {
-            lockTeam.unlock();
             return latests;
         } finally{
             lockTeam.unlock();
