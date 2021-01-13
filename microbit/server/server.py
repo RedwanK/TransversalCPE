@@ -61,7 +61,7 @@ def read_scales():
         column = i-(i//10)*10
         row = i//10
         if (scales[i].get()>0) :
-                send += "x:%.2f;y:%.2f;v:%.2f#" %(float(row), float(column), float(scales[i].get()))
+                send += "x:%.2f;y:%.2f;v:0.00#" %(float(row), float(column))
     
     b['state'] = 'normal'
 

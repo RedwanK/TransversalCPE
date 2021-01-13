@@ -40,7 +40,27 @@ int intToStr(int x, char str[], int d)
   
 // Converts a floating-point/double number to a string. 
 void ftoa(float n, char* res, int afterpoint) 
-{ 
+{
+    if (n == 0.00f) {
+        int j = 0,
+            x = 0;
+        res[j] = '0';
+        j++;
+        res[j] = '.';
+        j++;
+
+        while (x < afterpoint) {
+            res[j] = '0';
+            x++;
+            j++;
+
+        }
+        
+        res[j] = '\0';
+        return;
+
+    } // Zero case
+    
     // Extract integer part 
     int ipart = (int)n; 
   
