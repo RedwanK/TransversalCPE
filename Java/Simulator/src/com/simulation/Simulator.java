@@ -9,9 +9,10 @@ import java.util.ArrayList;
 public class Simulator {
 
     private float frequency = 1.0f;
-    private int maxConcurrentIncidents = 2000;
+    private int maxConcurrentIncidents = 60;
     private float baseFrequency = .4f;
     private float baseIncidentResolutionRate = .1f;
+    private float aggravationRate = baseIncidentResolutionRate/10;
 
     public Simulator() {}
 
@@ -67,9 +68,9 @@ public class Simulator {
         if(intensite <= 0) {
             incident.setIntensity(0);
             api.postUpdateIntensityIncident(incident);
-//            api.resolveIncident(incident.getId());
+//            api.resolveIncident(incident.getId()); //Commented because no longer used (kept in case of rollback)
 //            api.resolveIntervention(intervention.getId());
-            System.out.println("Intensity for incident "+incident.getId()+" is < 0 :resolved.");
+            System.out.println("Intensity for incident "+incident.getId()+" is < 0");
             return incident;
         } else if(intensite == coef) {
             incident.setIntensity(intensite-(this.baseIncidentResolutionRate));
@@ -80,10 +81,28 @@ public class Simulator {
         }
 
         api.postUpdateIntensityIncident(incident);
-        System.out.println("Intensity updated !!! (current value for incident "+incident.getId()+" : "+incident.getIntensity()+")");
+//        System.out.println("Intensity updated !!! (current value for incident "+incident.getId()+" : "+incident.getIntensity()+")");
         return incident;
     }
 
+    public Incident aggravateIncident(Incident incident){
+        float intensity = incident.getIntensity()+aggravationRate;
+        ApiSimulator api = new ApiSimulator();
+        if (intensity > 10) {
+            incident.setIntensity(10f);
+            api.postUpdateIntensityIncident(incident);
+            return incident;
+        }
+        incident.setIntensity(intensity);
+        api.postUpdateIntensityIncident(incident);
+        return incident;
+    }
+
+    /**
+     * Returns true or false, determining whether an incident is generated or not
+     * @param size
+     * @return
+     */
     private boolean shouldIGenerateAnIncident(int size) {
         return Random.randomFreq()*frequency > baseFrequency && size < maxConcurrentIncidents;
     }

@@ -35,6 +35,11 @@ public class Api {
         this.setHeaders(headersArray);
     }
 
+    /**
+     * Requests the API with GET method
+     * @param path
+     * @return
+     */
     public String getRequest(String path) {
 
         String urlString = this.baseURL+path;
@@ -63,6 +68,12 @@ public class Api {
         return content.toString();
     }
 
+    /**
+     * Requests the api with POST method and a payload.
+     * @param path String - path/route after the baseUrl
+     * @param jsonBody String - Json string
+     * @return Json response
+     */
  public String postRequest(String path, String jsonBody) {
         String urlString = this.baseURL+path;
         StringBuffer content = new StringBuffer();

@@ -2,6 +2,8 @@ package com.simulation;
 
 import api.ApiSimulator;
 import entities.*;
+import utils.JsonManager;
+
 import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -18,6 +20,8 @@ public class Main {
     private static volatile ArrayList<Incident> incidentsWInt = new ArrayList<>();
     private static volatile ArrayList<Incident> incidentsWOutInt = new ArrayList<>();
     private static volatile ArrayList<Location> locations = new ArrayList<>();
+
+    private static volatile boolean firstApiCallsDone = false;
 
     public static void main(String[] args) {
         System.out.println("Main - starting...");
@@ -37,16 +41,16 @@ public class Main {
                 while (true) {
                     try {
                         lock.lock();
-                        System.out.println("Api calling.");
+                        System.out.println("Retrieving api data....");
                         jsonAllIncidents    = api.getListUnresolvedIncidents();
                         jsonIncidentWInt    = api.getListIncidentWithIntervention();
                         jsonIncidentWOutInt = api.getListIncidentWithoutIntervention();
                         jsonLocations       = api.getListLocations();
 
-                        allIncidents        = Factory.getIncidentObjects(jsonAllIncidents);
-                        incidentsWInt       = Factory.getIncidentObjects(jsonIncidentWInt);
-                        incidentsWOutInt    = Factory.getIncidentObjects(jsonIncidentWOutInt);
-                        locations           = Factory.getLocationObjects(jsonLocations);
+                        allIncidents        = JsonManager.getIncidentObjects(jsonAllIncidents);
+                        incidentsWInt       = JsonManager.getIncidentObjects(jsonIncidentWInt);
+                        incidentsWOutInt    = JsonManager.getIncidentObjects(jsonIncidentWOutInt);
+                        locations           = JsonManager.getLocationObjects(jsonLocations);
 
                         System.out.println(
                                 "Number of incidents in total : "+allIncidents.size()+"\n"
@@ -54,6 +58,8 @@ public class Main {
                                 +"Number of incidents not managed yet : "+incidentsWOutInt.size()
                         );
                     } finally {
+                        System.out.println("...Api data retrieval done");
+                        firstApiCallsDone = true;
                         lock.unlock();
                     }
 
@@ -77,20 +83,28 @@ public class Main {
                 do {
                     try {
                         lock.lock();
-                        System.out.println("Simulator loop");
-                        simulator.generateIncident(allIncidents, locations);
-                        System.out.println("Nombres d'incidents : "+allIncidents.size());
-                        for(Incident incident : incidentsWInt) {
-                            int currentIncidentIndex = incidentsWInt.indexOf(incident);
-                            String jsonInter = api.getInterventionByIncidentId(incident.getId());
-                            Intervention intervention = Factory.getInterventionFromJsonString(jsonInter);
-                            incident = simulator.correctIncident(incident, intervention);
-                            incidentsWInt.set(currentIncidentIndex, incident);
+                        if(firstApiCallsDone){
+                            System.out.println("Computing...");
+                            int preAddSize = allIncidents.size();
+                            simulator.generateIncident(allIncidents, locations);
+                            System.out.println("Incident count : "+allIncidents.size()+"\n\t"+(allIncidents.size()-preAddSize)+" created.");
+                            for(Incident incident : incidentsWInt) {
+                                int currentIncidentIndex = incidentsWInt.indexOf(incident);
+                                String jsonInter = api.getInterventionByIncidentId(incident.getId());
+                                Intervention intervention = JsonManager.getInterventionFromJsonString(jsonInter);
+                                incident = simulator.correctIncident(incident, intervention);
+                                incidentsWInt.set(currentIncidentIndex, incident);
+                            }
+                            for(Incident incident : incidentsWOutInt) {
+                                int currentIncidentIndex = incidentsWOutInt.indexOf(incident);
+                                incident = simulator.aggravateIncident(incident);
+                                incidentsWOutInt.set(currentIncidentIndex, incident);
+                            }
                         }
 
                     } finally {
+                        System.out.println("Finished com");
                         lock.unlock();
-                        System.out.println("lock released");
 
                     }
 

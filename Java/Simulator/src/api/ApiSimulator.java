@@ -18,7 +18,10 @@ public class ApiSimulator extends Api {
         super(url, headersArray);
     }
 
-
+    /**
+     * Lists the unresolved incidents
+     * @return
+     */
     public String getListUnresolvedIncidents() {
         return this.getRequest("/api/incidents/unresolved/list");
     }
@@ -26,7 +29,7 @@ public class ApiSimulator extends Api {
     /**
      * Creates a new json incident and posts it to the api
      *
-     * @param incident
+     * @param incident new incident to save to the api database
      *
      * @return true si post successful
      */
@@ -49,6 +52,13 @@ public class ApiSimulator extends Api {
         return ((String)jsonResponse.get("status")).equals("ok");
     }
 
+    /**
+     * Updates the intensity of an incident from java to the api database
+     * - Also updates the codeIncident
+     *
+     * @param incident incident to update
+     * @return
+     */
     public boolean postUpdateIntensityIncident(Incident incident) {
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = new JSONObject();
@@ -70,6 +80,7 @@ public class ApiSimulator extends Api {
      * Tells the api to mark an incident as resolved
      * @param incidentId
      * @return
+     * @deprecated No longer needed
      */
     public boolean resolveIncident(int incidentId) {
         String response;
@@ -86,6 +97,7 @@ public class ApiSimulator extends Api {
     /**
      * Tells the api to mark an Intervention as resolved.
      * @param interventionId
+     * @deprecated no longer needed
      */
     public void resolveIntervention(int interventionId) {
         this.getRequest("/api/interventions/resolve/"+interventionId);
@@ -99,20 +111,12 @@ public class ApiSimulator extends Api {
         return this.getRequest("/api/locations/list");
     }
 
-
-    public String getLocation(int id) { return this.getRequest("/api/location/"+id);}
-
-    public String getListSensors() { return this.getRequest("/api/sensors/list");}
-
     /**
      *
      * @return
+     * @deprecated no longer needed
      */
     public String getListIntervention() { return this.getRequest("/api/interventions/unresolved/list"); }
-
-    public String getListCities() {
-        return this.getRequest("/api/cities/list");
-    }
 
     public String getListIncidentWithIntervention() {
         return this.getRequest("/api/incidents/with-interventions/list");
@@ -124,10 +128,6 @@ public class ApiSimulator extends Api {
 
     public String getInterventionByIncidentId(int incidentId) {
         return this.getRequest("/api/incidents/"+incidentId+"/intervention");
-    }
-
-    public String getSensorByLocationId(int locationId) {
-        return this.getRequest("/api/location/"+locationId+"/sensor");
     }
 
 
