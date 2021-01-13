@@ -66,4 +66,18 @@ class IncidentController extends AbstractFOSRestController
         $incidents = $repository->findBy(['resolved_at' => null]);
         return $this->handleView($this->view($incidents));
     }
+
+
+    /**
+     * Lists all Incidents with no interventions.
+     * @Rest\Get("/incidents/no-intervention/list")
+     *
+     * @return Response
+     */
+    public function getIncidentWithNoInterventionAction()
+    {
+        $repository = $this->getDoctrine()->getRepository(Incident::class);
+        $incidents = $repository->findBy(['intervention' => null, 'resolved_at' => null]);
+        return $this->handleView($this->view($incidents));
+    }
 }
