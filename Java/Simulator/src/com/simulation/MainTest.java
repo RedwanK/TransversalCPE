@@ -13,10 +13,7 @@ public class MainTest {
         int i = 1;
         int nb = 8;
         while (nb-i != 0){
-            if (nb-i<2) {
-
-            }
-            Incident incident = new Incident(i,"redman le sacré zeub","chlib",1,1.0f);
+            Incident incident = new Incident(i,"redman le sacré zeub","chlib",1,1.0f,1,1);
             new ApiSimulator().postIncident(incident);
             i++;
         }

@@ -37,6 +37,7 @@ public class Main {
             @Override
             public void run() {
                 super.run();
+                super.setName("api");
                 System.out.println("Api Recurrent Calls Thread running.");
 
                 while (!interrupted()) {
@@ -81,21 +82,23 @@ public class Main {
             @Override
             public void run() {
                 super.run();
+                super.setName("simulator");
                 Simulator simulator = new Simulator();
                 do {
                     try {
                         lock.lock();
                         System.out.println("Simulator loop");
                         simulator.generateIncident(allIncidents, locations);
+                        System.out.println("Nombres d'incidents : "+allIncidents.size());
                         for(Incident incident : incidentsWInt) {
                             int currentIncidentIndex = incidentsWInt.indexOf(incident);
                             String jsonInter = api.getInterventionByIncidentId(incident.getId());
                             Intervention intervention = Factory.getInterventionFromJsonString(jsonInter);
                             incident = simulator.correctIncident(incident, intervention);
                             incidentsWInt.set(currentIncidentIndex, incident);
-                            if(incident.getId() == 0) {
-                                incidentsWInt.remove(currentIncidentIndex);
-                            }
+//                            if(incident.getIntensity() == 0) {
+//                                incidentsWInt.remove(currentIncidentIndex);
+//                            }
                         }
 
                     } finally {
