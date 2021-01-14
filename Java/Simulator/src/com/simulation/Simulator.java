@@ -76,6 +76,13 @@ public class Simulator {
         float coef = intervention.getCoeff()/intervention.getNum_age();
         ApiSimulator api = new ApiSimulator();
 
+        if(intensite == coef) {
+            incident.setIntensity(intensite-(this.baseIncidentResolutionRate));
+        } else if(intensite < coef) {
+            incident.setIntensity(intensite-(this.baseIncidentResolutionRate *4));
+        } else if(intensite > coef) {
+            incident.setIntensity(intensite-(this.baseIncidentResolutionRate /4));
+        }
         if(intensite <= 0) {
             incident.setIntensity(0);
             api.postUpdateIntensityIncident(incident);
@@ -83,12 +90,6 @@ public class Simulator {
 //            api.resolveIntervention(intervention.getId());
             System.out.println("Intensity for incident "+incident.getId()+" is now 0.\n\tSent to the API.");
             return incident;
-        } else if(intensite == coef) {
-            incident.setIntensity(intensite-(this.baseIncidentResolutionRate));
-        } else if(intensite < coef) {
-            incident.setIntensity(intensite-(this.baseIncidentResolutionRate *4));
-        } else if(intensite > coef) {
-            incident.setIntensity(intensite-(this.baseIncidentResolutionRate /4));
         }
         System.out.println("DECREASE INTENSITY " + incident.getIntensity());
         api.postUpdateIntensityIncident(incident);
