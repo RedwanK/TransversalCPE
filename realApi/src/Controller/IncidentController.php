@@ -36,6 +36,8 @@ class IncidentController extends AbstractFOSRestController
         }
 
         $incident = $em->getRepository(Incident::class)->findOneBy(['location' => $location, 'resolved_at' => null]);
+        $intervention = $em->getRepository(Intervention::class)->findOneBy(['incident' => $incident]);
+
         if(!$incident) {
             if($data["v"] > 0) {
                 $incident= new Incident();
@@ -45,8 +47,12 @@ class IncidentController extends AbstractFOSRestController
                 $incident->setType($type);
             }
         } else {
-            if(floatval($data['v']) == 0) {
+            if(floatval($data['v']) == floatval(0)) {
                 $incident->setResolvedAt(new \DateTime());
+                if($intervention) {
+                    $intervention->setResolvedAt(new \DateTime());
+                    $em->persist($intervention);
+                }
             } else {
                 $incident->setIntensity(floatval($data['v']));
                 $incident->setCodeIncident("x:".$data['x'].";y:".$data['y'].";v:".$data['v']."#");
@@ -55,7 +61,6 @@ class IncidentController extends AbstractFOSRestController
                 }
             }
         }
-
         $em->persist($incident);
         $em->persist($location);
         $em->flush();

@@ -10,9 +10,9 @@ import java.util.ArrayList;
 public class Simulator {
 
     private float frequency = 1.0f;
-    private int maxConcurrentIncidents = 60;
+    private int maxConcurrentIncidents = 3;
     private float baseFrequency = .4f;
-    private float baseIncidentResolutionRate = .9f;
+    private float baseIncidentResolutionRate = 1.5f;
     private float aggravationRate = baseIncidentResolutionRate/10;
 
     public Simulator() {}
