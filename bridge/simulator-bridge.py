@@ -45,12 +45,13 @@ def retrieveApi(apiData):
     print('retrieveApi')
     while True:
             response = requests.get(ENV + "/api/incidents/unresolved/list")
+            apiData[:] = []
             if response != "":
                     list = response.json()
                     for incident in list:
                         if incident['code_incident'] not in apiData:
                             apiData.append(incident['code_incident'])
-                    time.sleep(5)
+                    time.sleep(4)
 
     print('END retrieveApi')
 
@@ -61,8 +62,9 @@ def handle_uart(apiData):
             for incident in apiData:
                 print(incident)
                 sendUARTMessage(incident)
-                time.sleep(5)
-                apiData.remove(incident)
+                time.sleep(2)
+                if incident in apiData:
+                	apiData.remove(incident)
             time.sleep(1)
     print('END handle_uart')
 

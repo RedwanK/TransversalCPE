@@ -60,15 +60,17 @@ public class Main {
                     } finally {
                         System.out.println("...Api data retrieval done");
                         firstApiCallsDone = true;
+
                         lock.unlock();
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                            return;
+                        }
                     }
 
-                    try {
-                        Thread.sleep(6000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        return;
-                    }
+
                 }
             }
         };
@@ -106,14 +108,14 @@ public class Main {
                     } finally {
                         System.out.println("Finished com");
                         lock.unlock();
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
 
                     }
 
-                    try {
-                        Thread.sleep(6000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
                 } while (true);
             }
         };

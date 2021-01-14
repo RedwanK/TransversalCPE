@@ -92,13 +92,15 @@ class EmergencyController extends AbstractFOSRestController
                 //return $this->handleView($this->view(["error" => "unable to find corresponding incident"], Response::HTTP_BAD_REQUEST));
             }
 
-            if ($icd->getResolvedAt() == null) {
-                $icd->setResolvedAt(new \DateTime());
-                $icd->setIntensity($incident->intensity);
-                $icd->setcodeIncident($incident->code_incident);
-
-                $doctrine->getManager()->persist($icd);
+            $icd->setResolvedAt(new \DateTime());
+            $icd->setIntensity($incident->intensity);
+            $icd->setcodeIncident($incident->code_incident);
+            $intervention = $doctrine->getRepository(Intervention::class)->findOneBy(["incident" => $icd]);
+            if($intervention) {
+                $intervention->setResolvedAt(new \DateTime());
+                $doctrine->getManager()->persist($intervention);
             }
+            $doctrine->getManager()->persist($icd);
         }
         return true;
     }
