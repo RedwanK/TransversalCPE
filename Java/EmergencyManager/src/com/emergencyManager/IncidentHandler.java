@@ -36,9 +36,6 @@ public class IncidentHandler {
                 try {
                     System.out.println("requesting for incidents ...");
                     jsonStringInci = api.getRequest("/api/incidents/no-intervention/list");
-                    TimeUnit.SECONDS.sleep(5);
-                } catch (InterruptedException e) {
-                    return;
                 } finally {
                     lockInci.unlock();
                 }
@@ -46,11 +43,13 @@ public class IncidentHandler {
                 try {
                     System.out.println("requesting for teams ...");
                     jsonStringTeam = api.getRequest("/api/team/unresolved/list");
-                    TimeUnit.SECONDS.sleep(5);
-                } catch (InterruptedException e) {
-                    return;
                 } finally {
                     lockTeam.unlock();
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

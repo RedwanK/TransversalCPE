@@ -27,7 +27,7 @@ public class Main {
         System.out.println("Main - starting...");
         ApiSimulator api;
         if(args.length > 0) {
-            api = new ApiSimulator(args[0]); // http://localhost
+            api = new ApiSimulator(args[0]); // http://simulator-api.local
         } else {
             api = new ApiSimulator();
         }
@@ -64,7 +64,7 @@ public class Main {
                     }
 
                     try {
-                        Thread.sleep(2500);
+                        Thread.sleep(6000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                         return;
@@ -110,7 +110,7 @@ public class Main {
                     }
 
                     try {
-                        Thread.sleep(2500);
+                        Thread.sleep(6000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

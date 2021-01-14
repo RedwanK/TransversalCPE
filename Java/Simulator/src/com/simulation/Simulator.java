@@ -12,7 +12,7 @@ public class Simulator {
     private float frequency = 1.0f;
     private int maxConcurrentIncidents = 60;
     private float baseFrequency = .4f;
-    private float baseIncidentResolutionRate = .1f;
+    private float baseIncidentResolutionRate = .9f;
     private float aggravationRate = baseIncidentResolutionRate/10;
 
     public Simulator() {}
@@ -79,7 +79,7 @@ public class Simulator {
         } else if(intensite > coef) {
             incident.setIntensity(intensite-(this.baseIncidentResolutionRate /4));
         }
-
+        System.out.println("DECREASE INTENSITY " + incident.getIntensity());
         api.postUpdateIntensityIncident(incident);
 //        System.out.println("Intensity updated !!! (current value for incident "+incident.getId()+" : "+incident.getIntensity()+")");
         return incident;
