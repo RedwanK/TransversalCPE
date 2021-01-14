@@ -9,6 +9,9 @@ import org.json.simple.parser.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * JsonManager Class manipulates json strings and returns one or multiple Objects
+ */
 public class JsonManager {
 
     private static String[] entitiesList = { "city", "location", "sensor", "incident", "intervention" };
