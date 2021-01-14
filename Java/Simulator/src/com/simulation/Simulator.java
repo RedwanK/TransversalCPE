@@ -15,7 +15,7 @@ public class Simulator {
      */
     private float multiplier = 1.0f;
     /** limiting the number of incidents in the database*/
-    private int maxConcurrentIncidents = 3;
+    private int maxConcurrentIncidents = 7;
     /** frequency used to determine whether the simulator generates a new incident or not*/
     private float baseFrequency = .4f;
     /** rate of <b>decrease</b> of incident intensity*/
