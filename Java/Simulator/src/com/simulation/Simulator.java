@@ -73,7 +73,7 @@ public class Simulator {
     public Incident correctIncident(Incident incident, Intervention intervention) {
         float intensite = incident.getIntensity();
         System.out.println("Current intensity : "+intensite);
-        float coef = intervention.getCoeff();
+        float coef = intervention.getCoeff()/intervention.getNum_age();
         ApiSimulator api = new ApiSimulator();
 
         if(intensite <= 0) {
