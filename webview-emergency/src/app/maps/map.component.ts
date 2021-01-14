@@ -192,7 +192,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     });
 
-    /* Get sensors */
+    /* Get sensors 
     this.dataService.PAGE = MapPageOptions.sensor;
     this.dataService.sendGetRequest().pipe(takeUntil(this.destroy$)).subscribe((data: any[]) => {
       this.sensors = data as Sensor[];
@@ -200,7 +200,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
       // Update interventions markers
       this.apiService.__updateSensors(this.map, this.sensors)
 
-    });
+    }); */
   }
 
   @HostListener('window:resize', ['$event'])
