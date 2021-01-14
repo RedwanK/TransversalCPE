@@ -46,3 +46,7 @@ Si le cron ne fonctionne pas tout de suite :
 source ~/.bashrc
 ```
 
+#watch every 2 sc
+```
+watch -n 2 ./update-emergency.sh
+```
