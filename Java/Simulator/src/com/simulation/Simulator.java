@@ -83,7 +83,7 @@ public class Simulator {
         } else if(intensite > coef) {
             incident.setIntensity(intensite-(this.baseIncidentResolutionRate /4));
         }
-        if(intensite <= 0) {
+        if(incident.getIntensity() <= 0) {
             incident.setIntensity(0);
             api.postUpdateIntensityIncident(incident);
 //            api.resolveIncident(incident.getId()); //Commented because no longer used (kept in case of rollback)
