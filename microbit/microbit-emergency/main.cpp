@@ -408,7 +408,7 @@ void receive_protocol() {
                 to_string_incident(icd, str, 1);
 
                 /* Send to serial */
-                serial.send(str);
+                serial.send(str, SYNC_SPINWAIT);
                 //display.scroll(str);
 
             } /* Incident not NULL */

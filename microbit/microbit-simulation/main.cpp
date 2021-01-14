@@ -669,8 +669,6 @@ void send_ack(int cipher) {
 void send_incident(char *str_icd, int dest) {
     /* Send incident */
     char pb[M_PROTOCOL_SIZE + STR_SIZE];
-
-    fiber_sleep(600);
         
     int i = 0,
         j = 0;
