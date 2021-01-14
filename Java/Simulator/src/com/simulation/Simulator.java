@@ -4,22 +4,33 @@ import api.ApiSimulator;
 import entities.*;
 import utils.Random;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class Simulator {
 
-    private float frequency = 1.0f;
+    /**
+     * multiplier for generating incidents
+     * (<1, more chance to generate an incident on each loop)
+     * (>1, less chance to generate an incident on each loop)
+     */
+    private float multiplier = 1.0f;
+    /** limiting the number of incidents in the database*/
     private int maxConcurrentIncidents = 3;
+    /** frequency used to determine whether the simulator generates a new incident or not*/
     private float baseFrequency = .4f;
+    /** rate of <b>decrease</b> of incident intensity*/
     private float baseIncidentResolutionRate = 1.5f;
+    /** rate of <b>increase</b> of incident intensity */
     private float aggravationRate = baseIncidentResolutionRate/10;
 
     public Simulator() {}
 
-    public Simulator(float freq, int concInc) {
-        this.frequency = freq;
+    public Simulator(int concInc, float freq, float baseFreq, float baseIncidentResolutionRate, float aggravationRate) {
+        this.multiplier = freq;
         this.maxConcurrentIncidents = concInc;
+        this.baseFrequency = baseFreq;
+        this.baseIncidentResolutionRate = baseIncidentResolutionRate;
+        this.aggravationRate = aggravationRate;
     }
 
     /**
@@ -70,7 +81,7 @@ public class Simulator {
             api.postUpdateIntensityIncident(incident);
 //            api.resolveIncident(incident.getId()); //Commented because no longer used (kept in case of rollback)
 //            api.resolveIntervention(intervention.getId());
-            System.out.println("Intensity for incident "+incident.getId()+" is < 0");
+            System.out.println("Intensity for incident "+incident.getId()+" is now 0.\n\tSent to the API.");
             return incident;
         } else if(intensite == coef) {
             incident.setIntensity(intensite-(this.baseIncidentResolutionRate));
@@ -109,6 +120,6 @@ public class Simulator {
      * @return
      */
     private boolean shouldIGenerateAnIncident(int nbCurrentIncident) {
-        return Random.randomFreq()*frequency > baseFrequency && nbCurrentIncident < maxConcurrentIncidents;
+        return Random.randomFreq() * multiplier > baseFrequency && nbCurrentIncident < maxConcurrentIncidents;
     }
 }
