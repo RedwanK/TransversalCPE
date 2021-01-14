@@ -14,12 +14,16 @@ export class LocationeService {
    * @param location 
    */
   public toString(location: Locatione): string {
-    let s: string;
-    s = '<table><tbody>';
-    s += '<tr><td>Ville</td><td>'+this.cityService.toString(location.city)+'</td></tr>';
-    s += '<tr><td>Latitude</td><td>'+location.latitude+'</td></tr>';
-    s += '<tr><td>Longitude</td><td>'+location.longitude+'</td></tr>';
-    s += '</tbody></table>';
+    let s: string = '';
+    if (location) {
+      s = '<table><tbody>';
+      if (location.city) {
+        s += '<tr><td>Ville</td><td>'+this.cityService.toString(location.city)+'</td></tr>';
+      }
+      s += '<tr><td>Latitude</td><td>'+location.latitude+'</td></tr>';
+      s += '<tr><td>Longitude</td><td>'+location.longitude+'</td></tr>';
+      s += '</tbody></table>';
+    }
 
     return s;
 
