@@ -26,7 +26,7 @@ public class Main {
                     if(msg_status) {
                         System.out.println("Intervention for Incident n°" + inter.getIncid() + " sent successfully");
                     } else{
-                        System.out.println("Intervention for Incident n°" + inter.getIncid() + " had a problem at send");
+                        System.out.println("Intervention for Incident n°" + inter.getIncid() + " not sent");
                     }
                 }
             }

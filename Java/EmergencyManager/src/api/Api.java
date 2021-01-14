@@ -94,7 +94,7 @@ public class Api {
             in.close();
             con.disconnect();
         } catch (IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             return "";
         }
 
