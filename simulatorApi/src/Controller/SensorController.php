@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 use App\Entity\City;
+use App\Entity\Location;
 use App\Entity\Sensor;
 use App\Form\CityType;
 use App\Form\SensorType;
@@ -49,5 +50,30 @@ class SensorController extends AbstractFOSRestController
             return $this->handleView($this->view(['status' => 'ok'], Response::HTTP_CREATED));
         }
         return $this->handleView($this->view($form->getErrors()));
+    }
+
+    /**
+     * Create Sensor.
+     * @Rest\Get("/sensors/fixtures")
+     *
+     * @return Response
+     */
+    public function fixturesSensorAction(Request $request)
+    {
+        $doctrine = $this->getDoctrine();
+        $em = $this->getDoctrine()->getManager();
+        $locations = $doctrine->getRepository(Location::class)->findAll();
+        foreach($locations as $location) {
+            $sensor = new Sensor();
+            $sensor->setType("temperature")
+                ->setLocation($location)
+                ->setName("SensoTemperature Gen4")
+                ->setReference("sensoTempGen4");
+
+            $em->persist($sensor);
+        }
+        $em->flush();
+
+        return $this->handleView($this->view(['status' => "ok"]));
     }
 }
