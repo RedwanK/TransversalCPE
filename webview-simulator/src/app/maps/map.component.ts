@@ -100,7 +100,7 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.__updateFromApi()
 
     // Subscribe to api
-    const source = interval(10000);
+    const source = interval(2000);
     this.subscription = source.subscribe(val => this.__updateFromApi());
 
     // Get current location
