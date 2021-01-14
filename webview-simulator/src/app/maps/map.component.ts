@@ -172,6 +172,16 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
    * Update from API
    */
   protected __updateFromApi(): void {
+    /* Get sensors */
+    this.dataService.PAGE = MapPageOptions.sensor;
+    this.dataService.sendGetRequest().pipe(takeUntil(this.destroy$)).subscribe((data: any[]) => {
+      this.sensors = data as Sensor[];
+
+      // Update interventions markers
+      this.apiService.__updateSensors(this.map, this.sensors)
+
+    });
+    
     /* Get interventions */
     this.dataService.PAGE = MapPageOptions.intervention;
     this.dataService.sendGetRequest().pipe(takeUntil(this.destroy$)).subscribe((data: any[]) => {
@@ -192,15 +202,6 @@ export class MapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     });
 
-    /* Get sensors */
-    this.dataService.PAGE = MapPageOptions.sensor;
-    this.dataService.sendGetRequest().pipe(takeUntil(this.destroy$)).subscribe((data: any[]) => {
-      this.sensors = data as Sensor[];
-
-      // Update interventions markers
-      this.apiService.__updateSensors(this.map, this.sensors)
-
-    });
   }
 
   @HostListener('window:resize', ['$event'])
